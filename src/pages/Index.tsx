@@ -5,29 +5,34 @@ import RecommendationVisualizations from "@/components/RecommendationVisualizati
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Github, FileText } from "lucide-react";
+import { Github, FileText, Play } from "lucide-react";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Navigation */}
-      <nav className="bg-black/20 backdrop-blur-md border-b border-white/10">
+    <div className="min-h-screen bg-black text-white">
+      {/* Netflix Navigation */}
+      <nav className="bg-black/90 backdrop-blur-md border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center">
-                <span className="text-xl font-bold text-white">N</span>
+            <div className="flex items-center space-x-8">
+              <div className="flex items-center space-x-3">
+                <div className="text-red-600 text-3xl font-black tracking-tight">NETFLIX</div>
               </div>
-              <h1 className="text-2xl font-bold text-white">NetflixAI</h1>
+              <div className="hidden md:flex space-x-6">
+                <span className="text-white hover:text-gray-300 cursor-pointer">Home</span>
+                <span className="text-white hover:text-gray-300 cursor-pointer">TV Shows</span>
+                <span className="text-white hover:text-gray-300 cursor-pointer">Movies</span>
+                <span className="text-red-500 font-medium cursor-pointer">AI Recommender</span>
+              </div>
             </div>
             <div className="flex space-x-4">
-              <Button variant="ghost" className="text-white hover:text-red-400">
+              <Button variant="ghost" className="text-white hover:text-gray-300 hover:bg-gray-800">
                 <Github className="w-4 h-4 mr-2" />
                 GitHub
               </Button>
-              <Button variant="ghost" className="text-white hover:text-red-400">
+              <Button variant="ghost" className="text-white hover:text-gray-300 hover:bg-gray-800">
                 <FileText className="w-4 h-4 mr-2" />
-                Documentation
+                Docs
               </Button>
             </div>
           </div>
@@ -36,26 +41,36 @@ const Index = () => {
 
       {/* Hero Section */}
       <div className="relative py-20 px-4">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="mb-12">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              Joint Movie
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-pink-600"> Recommendation </span>
-              System
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-12 text-center">
+            <h1 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
+              Find Your Perfect
+              <span className="text-red-600"> Movie </span>
+              Match
             </h1>
-            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-              Find the perfect movie for your next movie night. Our AI combines your preferences to recommend films you'll both enjoy.
+            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto font-light">
+              Our AI combines two users' preferences to recommend movies you'll both love. 
+              No more endless scrolling or settling for compromise.
             </p>
+            <div className="flex items-center justify-center gap-4">
+              <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 text-lg font-semibold">
+                <Play className="w-5 h-5 mr-2" />
+                Get Started
+              </Button>
+              <Button variant="outline" className="border-gray-600 text-white hover:bg-gray-800 px-8 py-3 text-lg">
+                Learn More
+              </Button>
+            </div>
           </div>
 
           {/* Main Content */}
-          <Card className="bg-white/10 backdrop-blur-md border-white/20 p-6 rounded-2xl shadow-xl">
-            <CardContent className="p-0">
+          <Card className="bg-gray-900/50 backdrop-blur-md border-gray-700 rounded-lg shadow-2xl">
+            <CardContent className="p-8">
               <div className="mb-8">
                 <NetflixRecommender />
               </div>
-              <Separator className="my-12 bg-white/20" />
-              <div className="bg-white p-8 rounded-xl">
+              <Separator className="my-12 bg-gray-700" />
+              <div className="bg-gray-800/50 p-8 rounded-xl">
                 <RecommendationVisualizations />
               </div>
             </CardContent>
@@ -63,18 +78,48 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Features Section */}
+      <div className="py-20 px-4 bg-gray-900/30">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Play className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Smart Matching</h3>
+              <p className="text-gray-400">Advanced algorithms analyze both users' preferences</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Github className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Open Source</h3>
+              <p className="text-gray-400">Built with transparency and community in mind</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Data-Driven</h3>
+              <p className="text-gray-400">Powered by real user behavior and preferences</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Footer */}
-      <footer className="py-12 px-4 bg-black/40">
+      <footer className="py-12 px-4 bg-black border-t border-gray-800">
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <div className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center">
-              <span className="text-sm font-bold text-white">N</span>
-            </div>
-            <span className="text-xl font-bold text-white">NetflixAI</span>
+            <span className="text-red-600 text-2xl font-black">NETFLIX</span>
+            <span className="text-white text-xl font-light">AI Recommender</span>
           </div>
-          <p className="text-gray-400">
-            Built with passion for data science and real-world problem solving
+          <p className="text-gray-400 text-sm">
+            Built with passion for data science and machine learning • Not affiliated with Netflix, Inc.
           </p>
+          <div className="mt-4 text-xs text-gray-500">
+            This is a portfolio project demonstrating joint recommendation systems
+          </div>
         </div>
       </footer>
     </div>
