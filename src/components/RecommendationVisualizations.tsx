@@ -1,6 +1,9 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Moon, Sun } from "lucide-react";
 
 // Sample Data for Visualizations
 const genreData = [
@@ -22,32 +25,51 @@ const algorithmData = [
 ];
 
 const RecommendationVisualizations = () => {
+  const [isDarkTheme, setIsDarkTheme] = useState<boolean>(true);
+
+  const themeClasses = isDarkTheme ? "text-white" : "text-gray-900";
+  const cardClasses = isDarkTheme ? "bg-gray-800/70 border-gray-700" : "bg-white border-gray-200";
+  const tabsClasses = isDarkTheme ? "bg-gray-700 border-gray-600" : "bg-gray-100 border-gray-200";
+  const tableHeaderClasses = isDarkTheme ? "border-gray-600" : "border-gray-300";
+  const tableRowClasses = isDarkTheme ? "border-gray-700" : "border-gray-200";
+  const insightsBgClasses = isDarkTheme ? "bg-gray-700/50" : "bg-gray-100";
+
   return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-bold text-white">Recommendation Analytics</h2>
+      <div className="flex justify-between items-center">
+        <h2 className={`text-2xl font-bold ${themeClasses}`}>Recommendation Analytics</h2>
+        <div className="flex items-center gap-2">
+          <Sun className="h-4 w-4" />
+          <Switch 
+            checked={isDarkTheme}
+            onCheckedChange={setIsDarkTheme}
+          />
+          <Moon className="h-4 w-4" />
+        </div>
+      </div>
       
       <Tabs defaultValue="genre">
-        <TabsList className="grid grid-cols-3 mb-6 bg-gray-700 border-gray-600">
+        <TabsList className={`grid grid-cols-3 mb-6 ${tabsClasses}`}>
           <TabsTrigger value="genre" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">Genre Analysis</TabsTrigger>
           <TabsTrigger value="algorithm" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">Algorithm Performance</TabsTrigger>
           <TabsTrigger value="venn" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">Preference Overlap</TabsTrigger>
         </TabsList>
         
         <TabsContent value="genre" className="space-y-6">
-          <Card className="bg-gray-800/70 border-gray-700">
+          <Card className={cardClasses}>
             <CardHeader>
-              <CardTitle className="text-white">Genre Preferences Comparison</CardTitle>
+              <CardTitle className={themeClasses}>Genre Preferences Comparison</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="w-full overflow-x-auto">
                 <table className="w-full min-w-[600px]">
                   <thead>
-                    <tr className="text-left border-b border-gray-600">
-                      <th className="pb-3 font-semibold text-gray-300">Genre</th>
+                    <tr className={`text-left border-b ${tableHeaderClasses}`}>
+                      <th className={`pb-3 font-semibold ${isDarkTheme ? "text-gray-300" : "text-gray-700"}`}>Genre</th>
                       <th className="pb-3 font-semibold text-red-400">User 1 Rating</th>
                       <th className="pb-3 font-semibold text-red-400">User 2 Rating</th>
-                      <th className="pb-3 font-semibold text-gray-300">Compatibility</th>
-                      <th className="pb-3 font-semibold text-gray-300">Movies</th>
+                      <th className={`pb-3 font-semibold ${isDarkTheme ? "text-gray-300" : "text-gray-700"}`}>Compatibility</th>
+                      <th className={`pb-3 font-semibold ${isDarkTheme ? "text-gray-300" : "text-gray-700"}`}>Movies</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -56,18 +78,18 @@ const RecommendationVisualizations = () => {
                       const compatibility = 100 - (diff * 20);
                       
                       return (
-                        <tr key={i} className="border-b border-gray-700">
-                          <td className="py-3 font-medium text-white">{item.genre}</td>
+                        <tr key={i} className={`border-b ${tableRowClasses}`}>
+                          <td className={`py-3 font-medium ${themeClasses}`}>{item.genre}</td>
                           <td className="py-3">
                             <div className="flex items-center">
                               <div className="bg-red-600 h-4 rounded-sm" style={{ width: `${item.user1 * 16}px` }} />
-                              <span className="ml-2 text-white">{item.user1.toFixed(1)}</span>
+                              <span className={`ml-2 ${themeClasses}`}>{item.user1.toFixed(1)}</span>
                             </div>
                           </td>
                           <td className="py-3">
                             <div className="flex items-center">
                               <div className="bg-red-500 h-4 rounded-sm" style={{ width: `${item.user2 * 16}px` }} />
-                              <span className="ml-2 text-white">{item.user2.toFixed(1)}</span>
+                              <span className={`ml-2 ${themeClasses}`}>{item.user2.toFixed(1)}</span>
                             </div>
                           </td>
                           <td className="py-3">
@@ -83,7 +105,7 @@ const RecommendationVisualizations = () => {
                               {compatibility}%
                             </div>
                           </td>
-                          <td className="py-3 text-white">{item.count}</td>
+                          <td className={`py-3 ${themeClasses}`}>{item.count}</td>
                         </tr>
                       );
                     })}
@@ -91,9 +113,9 @@ const RecommendationVisualizations = () => {
                 </table>
               </div>
               
-              <div className="mt-6 p-4 bg-gray-700/50 rounded-lg">
-                <h4 className="font-semibold mb-2 text-white">Key Insights</h4>
-                <ul className="space-y-1 text-sm text-gray-300 list-disc pl-4">
+              <div className={`mt-6 p-4 rounded-lg ${insightsBgClasses}`}>
+                <h4 className={`font-semibold mb-2 ${themeClasses}`}>Key Insights</h4>
+                <ul className={`space-y-1 text-sm list-disc pl-4 ${isDarkTheme ? "text-gray-300" : "text-gray-700"}`}>
                   <li>Both users share high ratings for <span className="font-medium text-red-400">Adventure</span> and <span className="font-medium text-red-400">Drama</span> genres</li>
                   <li>User 1 favors <span className="font-medium text-red-400">Sci-Fi</span> much more than User 2</li>
                   <li>User 2 prefers <span className="font-medium text-red-400">Horror</span> while User 1 doesn't enjoy it</li>
@@ -106,19 +128,19 @@ const RecommendationVisualizations = () => {
         
         <TabsContent value="algorithm" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="bg-gray-800/70 border-gray-700">
+            <Card className={cardClasses}>
               <CardHeader>
-                <CardTitle className="text-white">Algorithm Performance Metrics</CardTitle>
+                <CardTitle className={themeClasses}>Algorithm Performance Metrics</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-8">
                   {algorithmData.map((item, i) => (
                     <div key={i} className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="font-medium text-white">{item.method} Method</span>
-                        <span className="text-gray-400 text-sm">Score: {item.score.toFixed(1)}</span>
+                        <span className={`font-medium ${themeClasses}`}>{item.method} Method</span>
+                        <span className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>Score: {item.score.toFixed(1)}</span>
                       </div>
-                      <div className="h-2 w-full bg-gray-600 rounded-full overflow-hidden">
+                      <div className={`h-2 w-full rounded-full overflow-hidden ${isDarkTheme ? "bg-gray-600" : "bg-gray-200"}`}>
                         <div 
                           className={`h-full ${
                             item.method === 'Hybrid' ? 'bg-red-600' : 
@@ -128,7 +150,7 @@ const RecommendationVisualizations = () => {
                           style={{ width: `${(item.score / 5) * 100}%` }} 
                         />
                       </div>
-                      <div className="flex justify-between text-xs text-gray-400">
+                      <div className={`flex justify-between text-xs ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>
                         <span>Fairness: {(item.fairness * 100).toFixed(0)}%</span>
                         <span>Processing time: {item.time.toFixed(2)}s</span>
                       </div>
@@ -138,30 +160,30 @@ const RecommendationVisualizations = () => {
               </CardContent>
             </Card>
             
-            <Card className="bg-gray-800/70 border-gray-700">
+            <Card className={cardClasses}>
               <CardHeader>
-                <CardTitle className="text-white">Algorithm Comparison</CardTitle>
+                <CardTitle className={themeClasses}>Algorithm Comparison</CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
                 <div className="space-y-6">
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
                       <div className="text-2xl font-bold text-red-400">Hybrid</div>
-                      <div className="text-sm text-gray-400">Best Overall</div>
+                      <div className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>Best Overall</div>
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-red-400">Intersection</div>
-                      <div className="text-sm text-gray-400">Best Quality</div>
+                      <div className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>Best Quality</div>
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-red-400">Weighted</div>
-                      <div className="text-sm text-gray-400">Most Balanced</div>
+                      <div className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>Most Balanced</div>
                     </div>
                   </div>
                   
-                  <div className="p-4 bg-gray-700/50 rounded-lg">
-                    <h4 className="font-semibold mb-2 text-white">Algorithm Insights</h4>
-                    <ul className="space-y-1 text-sm text-gray-300 list-disc pl-4">
+                  <div className={`p-4 rounded-lg ${insightsBgClasses}`}>
+                    <h4 className={`font-semibold mb-2 ${themeClasses}`}>Algorithm Insights</h4>
+                    <ul className={`space-y-1 text-sm list-disc pl-4 ${isDarkTheme ? "text-gray-300" : "text-gray-700"}`}>
                       <li><span className="font-medium text-red-400">Hybrid method</span> delivered the best results for this user pair</li>
                       <li><span className="font-medium text-red-400">Intersection method</span> found fewer but higher quality recommendations</li>
                       <li><span className="font-medium text-red-400">Weighted approach</span> was faster but slightly less accurate</li>
@@ -175,9 +197,9 @@ const RecommendationVisualizations = () => {
         </TabsContent>
         
         <TabsContent value="venn" className="space-y-6">
-          <Card className="bg-gray-800/70 border-gray-700">
+          <Card className={cardClasses}>
             <CardHeader>
-              <CardTitle className="text-white">User Preference Overlap</CardTitle>
+              <CardTitle className={themeClasses}>User Preference Overlap</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col items-center">
@@ -194,9 +216,9 @@ const RecommendationVisualizations = () => {
                   <text x="200" y="170" textAnchor="middle" fill="white">29 shared</text>
                 </svg>
                 
-                <div className="mt-6 p-4 bg-gray-700/50 rounded-lg w-full max-w-md">
-                  <h4 className="font-semibold mb-2 text-white">Preference Overlap Analysis</h4>
-                  <ul className="space-y-1 text-sm text-gray-300 list-disc pl-4">
+                <div className={`mt-6 p-4 rounded-lg w-full max-w-md ${insightsBgClasses}`}>
+                  <h4 className={`font-semibold mb-2 ${themeClasses}`}>Preference Overlap Analysis</h4>
+                  <ul className={`space-y-1 text-sm list-disc pl-4 ${isDarkTheme ? "text-gray-300" : "text-gray-700"}`}>
                     <li>Users share <span className="font-medium text-red-400">26.6%</span> of their movie preferences</li>
                     <li>Common genres: <span className="font-medium text-red-400">Drama, Action, Adventure</span></li>
                     <li>Most divergent preferences: <span className="font-medium text-red-400">Horror, Romance</span></li>

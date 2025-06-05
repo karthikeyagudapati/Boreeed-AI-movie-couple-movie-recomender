@@ -1,17 +1,34 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import NetflixRecommender from "@/components/NetflixRecommender";
 import RecommendationVisualizations from "@/components/RecommendationVisualizations";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Github, FileText, Play } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Github, FileText, Play, Moon, Sun } from "lucide-react";
 
 const Index = () => {
+  const [isDarkTheme, setIsDarkTheme] = useState<boolean>(true);
+
+  const themeClasses = isDarkTheme 
+    ? "bg-black text-white" 
+    : "bg-gray-50 text-gray-900";
+
+  const navClasses = isDarkTheme 
+    ? "bg-black/90 border-gray-800" 
+    : "bg-white/90 border-gray-200";
+
+  const cardClasses = isDarkTheme 
+    ? "bg-gray-900/50 border-gray-700" 
+    : "bg-white/90 border-gray-200";
+
+  const buttonVariant = isDarkTheme ? "ghost" : "outline";
+
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className={`min-h-screen ${themeClasses}`}>
       {/* Netflix Navigation */}
-      <nav className="bg-black/90 backdrop-blur-md border-b border-gray-800">
+      <nav className={`${navClasses} backdrop-blur-md border-b`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-8">
@@ -19,18 +36,27 @@ const Index = () => {
                 <div className="text-red-600 text-3xl font-black tracking-tight">NETFLIX</div>
               </div>
               <div className="hidden md:flex space-x-6">
-                <span className="text-white hover:text-gray-300 cursor-pointer">Home</span>
-                <span className="text-white hover:text-gray-300 cursor-pointer">TV Shows</span>
-                <span className="text-white hover:text-gray-300 cursor-pointer">Movies</span>
+                <span className={`hover:text-gray-300 cursor-pointer ${isDarkTheme ? "text-white" : "text-gray-900"}`}>Home</span>
+                <span className={`hover:text-gray-300 cursor-pointer ${isDarkTheme ? "text-white" : "text-gray-900"}`}>TV Shows</span>
+                <span className={`hover:text-gray-300 cursor-pointer ${isDarkTheme ? "text-white" : "text-gray-900"}`}>Movies</span>
                 <span className="text-red-500 font-medium cursor-pointer">AI Recommender</span>
               </div>
             </div>
-            <div className="flex space-x-4">
-              <Button variant="ghost" className="text-white hover:text-gray-300 hover:bg-gray-800">
+            <div className="flex items-center space-x-4">
+              {/* Theme Toggle */}
+              <div className="flex items-center gap-2">
+                <Sun className="h-4 w-4" />
+                <Switch 
+                  checked={isDarkTheme}
+                  onCheckedChange={setIsDarkTheme}
+                />
+                <Moon className="h-4 w-4" />
+              </div>
+              <Button variant={buttonVariant} className={`${isDarkTheme ? "text-white hover:text-gray-300 hover:bg-gray-800" : "text-gray-900 hover:bg-gray-100"}`}>
                 <Github className="w-4 h-4 mr-2" />
                 GitHub
               </Button>
-              <Button variant="ghost" className="text-white hover:text-gray-300 hover:bg-gray-800">
+              <Button variant={buttonVariant} className={`${isDarkTheme ? "text-white hover:text-gray-300 hover:bg-gray-800" : "text-gray-900 hover:bg-gray-100"}`}>
                 <FileText className="w-4 h-4 mr-2" />
                 Docs
               </Button>
@@ -43,12 +69,12 @@ const Index = () => {
       <div className="relative py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="mb-12 text-center">
-            <h1 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
+            <h1 className={`text-5xl md:text-7xl font-black mb-6 leading-tight ${isDarkTheme ? "text-white" : "text-gray-900"}`}>
               Find Your Perfect
               <span className="text-red-600"> Movie </span>
               Match
             </h1>
-            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto font-light">
+            <p className={`text-xl mb-8 max-w-3xl mx-auto font-light ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>
               Our AI combines two users' preferences to recommend movies you'll both love. 
               No more endless scrolling or settling for compromise.
             </p>
@@ -57,20 +83,27 @@ const Index = () => {
                 <Play className="w-5 h-5 mr-2" />
                 Get Started
               </Button>
-              <Button variant="outline" className="border-gray-600 text-white hover:bg-gray-800 px-8 py-3 text-lg">
+              <Button 
+                variant="outline" 
+                className={`px-8 py-3 text-lg font-semibold ${
+                  isDarkTheme 
+                    ? "border-gray-400 text-white hover:bg-gray-800 bg-gray-900/50" 
+                    : "border-gray-600 text-gray-900 hover:bg-gray-100 bg-white"
+                }`}
+              >
                 Learn More
               </Button>
             </div>
           </div>
 
           {/* Main Content */}
-          <Card className="bg-gray-900/50 backdrop-blur-md border-gray-700 rounded-lg shadow-2xl">
+          <Card className={`${cardClasses} backdrop-blur-md rounded-lg shadow-2xl`}>
             <CardContent className="p-8">
               <div className="mb-8">
                 <NetflixRecommender />
               </div>
-              <Separator className="my-12 bg-gray-700" />
-              <div className="bg-gray-800/50 p-8 rounded-xl">
+              <Separator className={`my-12 ${isDarkTheme ? "bg-gray-700" : "bg-gray-300"}`} />
+              <div className={`p-8 rounded-xl ${isDarkTheme ? "bg-gray-800/50" : "bg-gray-100/50"}`}>
                 <RecommendationVisualizations />
               </div>
             </CardContent>
@@ -79,7 +112,7 @@ const Index = () => {
       </div>
 
       {/* Features Section */}
-      <div className="py-20 px-4 bg-gray-900/30">
+      <div className={`py-20 px-4 ${isDarkTheme ? "bg-gray-900/30" : "bg-gray-100/50"}`}>
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
@@ -87,37 +120,37 @@ const Index = () => {
                 <Play className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">Smart Matching</h3>
-              <p className="text-gray-400">Advanced algorithms analyze both users' preferences</p>
+              <p className={isDarkTheme ? "text-gray-400" : "text-gray-600"}>Advanced algorithms analyze both users' preferences</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Github className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">Open Source</h3>
-              <p className="text-gray-400">Built with transparency and community in mind</p>
+              <p className={isDarkTheme ? "text-gray-400" : "text-gray-600"}>Built with transparency and community in mind</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <FileText className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">Data-Driven</h3>
-              <p className="text-gray-400">Powered by real user behavior and preferences</p>
+              <p className={isDarkTheme ? "text-gray-400" : "text-gray-600"}>Powered by real user behavior and preferences</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="py-12 px-4 bg-black border-t border-gray-800">
+      <footer className={`py-12 px-4 border-t ${isDarkTheme ? "bg-black border-gray-800" : "bg-white border-gray-200"}`}>
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center space-x-3 mb-4">
             <span className="text-red-600 text-2xl font-black">NETFLIX</span>
-            <span className="text-white text-xl font-light">AI Recommender</span>
+            <span className={`text-xl font-light ${isDarkTheme ? "text-white" : "text-gray-900"}`}>AI Recommender</span>
           </div>
-          <p className="text-gray-400 text-sm">
+          <p className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>
             Built with passion for data science and machine learning • Not affiliated with Netflix, Inc.
           </p>
-          <div className="mt-4 text-xs text-gray-500">
+          <div className={`mt-4 text-xs ${isDarkTheme ? "text-gray-500" : "text-gray-500"}`}>
             This is a portfolio project demonstrating joint recommendation systems
           </div>
         </div>
