@@ -192,12 +192,20 @@ const NetflixRecommender = () => {
     : "bg-gray-50 text-gray-900";
 
   const cardClasses = isDarkTheme 
-    ? "bg-gray-800/70 border-gray-700" 
-    : "bg-white border-gray-200";
+    ? "bg-gray-900/50 border-gray-700" 
+    : "bg-white/90 border-gray-200";
 
   const inputClasses = isDarkTheme 
     ? "bg-gray-700 border-gray-600 text-white placeholder:text-gray-400" 
     : "bg-white border-gray-300 text-gray-900 placeholder:text-gray-500";
+
+  const labelClasses = isDarkTheme 
+    ? "text-white font-medium" 
+    : "text-gray-900 font-medium";
+
+  const headingClasses = isDarkTheme 
+    ? "text-white font-semibold" 
+    : "text-gray-900 font-semibold";
 
   return (
     <div className={`w-full max-w-6xl mx-auto pb-20 ${themeClasses}`}>
@@ -219,9 +227,9 @@ const NetflixRecommender = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex flex-col md:flex-row gap-6">
               <div className="flex-1 space-y-4">
-                <h3 className="text-lg font-medium">User 1</h3>
+                <h3 className={`text-lg ${headingClasses}`}>User 1</h3>
                 <div className="space-y-2">
-                  <Label htmlFor="user1Id" className={isDarkTheme ? "text-gray-300" : "text-gray-700"}>User ID</Label>
+                  <Label htmlFor="user1Id" className={labelClasses}>User ID</Label>
                   <Select value={user1Id} onValueChange={setUser1Id}>
                     <SelectTrigger className={inputClasses}>
                       <SelectValue placeholder="Select User 1" />
@@ -238,9 +246,9 @@ const NetflixRecommender = () => {
               </div>
 
               <div className="flex-1 space-y-4">
-                <h3 className="text-lg font-medium">User 2</h3>
+                <h3 className={`text-lg ${headingClasses}`}>User 2</h3>
                 <div className="space-y-2">
-                  <Label htmlFor="user2Id" className={isDarkTheme ? "text-gray-300" : "text-gray-700"}>User ID</Label>
+                  <Label htmlFor="user2Id" className={labelClasses}>User ID</Label>
                   <Select value={user2Id} onValueChange={setUser2Id}>
                     <SelectTrigger className={inputClasses}>
                       <SelectValue placeholder="Select User 2" />
@@ -258,7 +266,7 @@ const NetflixRecommender = () => {
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Select Genres</h3>
+              <h3 className={`text-lg ${headingClasses}`}>Select Genres</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
                 {availableGenres.map((genre) => (
                   <div key={genre} className="flex items-center space-x-2">
@@ -270,7 +278,7 @@ const NetflixRecommender = () => {
                     />
                     <Label 
                       htmlFor={genre} 
-                      className={`text-sm cursor-pointer ${isDarkTheme ? "text-gray-300" : "text-gray-700"}`}
+                      className={`text-sm cursor-pointer ${labelClasses}`}
                     >
                       {genre}
                     </Label>
@@ -280,7 +288,7 @@ const NetflixRecommender = () => {
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Recommendation Algorithm</h3>
+              <h3 className={`text-lg ${headingClasses}`}>Recommendation Algorithm</h3>
               <RadioGroup 
                 defaultValue="hybrid" 
                 value={recommendationMethod}
@@ -291,28 +299,28 @@ const NetflixRecommender = () => {
                   isDarkTheme ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50" : "border-gray-300 bg-gray-50 hover:bg-gray-100"
                 }`}>
                   <RadioGroupItem value="intersection" id="intersection" className="border-gray-400" />
-                  <Label htmlFor="intersection" className="flex-grow cursor-pointer">Intersection</Label>
+                  <Label htmlFor="intersection" className={`flex-grow cursor-pointer ${labelClasses}`}>Intersection</Label>
                 </div>
                 
                 <div className={`flex items-center space-x-2 border p-3 rounded-md hover:bg-opacity-50 ${
                   isDarkTheme ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50" : "border-gray-300 bg-gray-50 hover:bg-gray-100"
                 }`}>
                   <RadioGroupItem value="weighted" id="weighted" className="border-gray-400" />
-                  <Label htmlFor="weighted" className="flex-grow cursor-pointer">Weighted</Label>
+                  <Label htmlFor="weighted" className={`flex-grow cursor-pointer ${labelClasses}`}>Weighted</Label>
                 </div>
                 
                 <div className={`flex items-center space-x-2 border p-3 rounded-md hover:bg-opacity-50 ${
                   isDarkTheme ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50" : "border-gray-300 bg-gray-50 hover:bg-gray-100"
                 }`}>
                   <RadioGroupItem value="least-misery" id="least-misery" className="border-gray-400" />
-                  <Label htmlFor="least-misery" className="flex-grow cursor-pointer">Least Misery</Label>
+                  <Label htmlFor="least-misery" className={`flex-grow cursor-pointer ${labelClasses}`}>Least Misery</Label>
                 </div>
                 
                 <div className={`flex items-center space-x-2 border p-3 rounded-md hover:bg-opacity-50 ${
                   isDarkTheme ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50" : "border-gray-300 bg-gray-50 hover:bg-gray-100"
                 }`}>
                   <RadioGroupItem value="hybrid" id="hybrid" className="border-gray-400" />
-                  <Label htmlFor="hybrid" className="flex-grow cursor-pointer">Hybrid</Label>
+                  <Label htmlFor="hybrid" className={`flex-grow cursor-pointer ${labelClasses}`}>Hybrid</Label>
                 </div>
               </RadioGroup>
             </div>
@@ -341,14 +349,14 @@ const NetflixRecommender = () => {
                       <Users className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-medium">Movie Compatibility Score</h3>
+                      <h3 className={`text-lg font-medium ${headingClasses}`}>Movie Compatibility Score</h3>
                       <p className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>Based on your viewing histories and preferences</p>
                     </div>
                   </div>
                   
                   <div className="flex flex-col items-center">
                     <div className="flex items-center">
-                      <div className="text-3xl font-bold">{(compatibility * 100).toFixed(0)}%</div>
+                      <div className={`text-3xl font-bold ${headingClasses}`}>{(compatibility * 100).toFixed(0)}%</div>
                       <div className="ml-2 px-3 py-1 rounded bg-red-600 text-white text-xs font-medium">
                         {getCompatibilityMessage(compatibility)}
                       </div>
@@ -376,10 +384,10 @@ const NetflixRecommender = () => {
             {/* Recommendations Tab */}
             <TabsContent value="recommendations" className="space-y-6">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">Recommended For Both of You</h2>
+                <h2 className={`text-xl font-bold ${headingClasses}`}>Recommended For Both of You</h2>
                 
                 <div className="flex items-center gap-2">
-                  <span className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>Show Details</span>
+                  <span className={`text-sm ${labelClasses}`}>Show Details</span>
                   <Switch 
                     checked={showDetailedExplanation}
                     onCheckedChange={setShowDetailedExplanation}
@@ -403,11 +411,11 @@ const NetflixRecommender = () => {
                         <div className="p-4 md:p-6 flex-1">
                           <div className="flex flex-col md:flex-row justify-between">
                             <div>
-                              <h3 className="text-xl font-bold">{movie.title}</h3>
+                              <h3 className={`text-xl font-bold ${headingClasses}`}>{movie.title}</h3>
                               <div className="flex items-center gap-2 mt-1">
-                                <span className={`text-sm font-medium ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>{movie.year}</span>
+                                <span className={`text-sm font-medium ${labelClasses}`}>{movie.year}</span>
                                 <span className={`w-1 h-1 rounded-full ${isDarkTheme ? "bg-gray-500" : "bg-gray-400"}`}></span>
-                                <span className={`text-sm ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>{movie.genres.join(', ')}</span>
+                                <span className={`text-sm ${labelClasses}`}>{movie.genres.join(', ')}</span>
                               </div>
                             </div>
                             
@@ -428,17 +436,17 @@ const NetflixRecommender = () => {
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                   <div className="flex items-center justify-between">
-                                    <span className={`text-sm font-medium ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>User 1 Score:</span>
+                                    <span className={`text-sm font-medium ${labelClasses}`}>User 1 Score:</span>
                                     {renderScore(movie.user1Score || 0)}
                                   </div>
                                   <div className="flex items-center justify-between">
-                                    <span className={`text-sm font-medium ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>User 2 Score:</span>
+                                    <span className={`text-sm font-medium ${labelClasses}`}>User 2 Score:</span>
                                     {renderScore(movie.user2Score || 0)}
                                   </div>
                                 </div>
                                 
                                 <div>
-                                  <h4 className="text-sm font-medium mb-1">Why this movie?</h4>
+                                  <h4 className={`text-sm font-medium mb-1 ${headingClasses}`}>Why this movie?</h4>
                                   <p className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>
                                     {
                                       movie.user1Score && movie.user2Score && 
@@ -465,21 +473,21 @@ const NetflixRecommender = () => {
                 {/* User 1 Profile */}
                 <Card className={cardClasses}>
                   <CardContent className="pt-6">
-                    <h3 className="text-lg font-bold mb-4">User 1 Profile</h3>
+                    <h3 className={`text-lg font-bold mb-4 ${headingClasses}`}>User 1 Profile</h3>
                     
                     <div className="space-y-4">
                       <div>
-                        <div className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>Total Ratings</div>
-                        <div className="text-2xl font-bold">{userProfiles.user1?.totalRatings}</div>
+                        <div className={`text-sm ${labelClasses}`}>Total Ratings</div>
+                        <div className={`text-2xl font-bold ${headingClasses}`}>{userProfiles.user1?.totalRatings}</div>
                       </div>
                       
                       <div>
-                        <div className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>Average Rating</div>
-                        <div className="text-2xl font-bold">{userProfiles.user1?.avgRating.toFixed(1)}</div>
+                        <div className={`text-sm ${labelClasses}`}>Average Rating</div>
+                        <div className={`text-2xl font-bold ${headingClasses}`}>{userProfiles.user1?.avgRating.toFixed(1)}</div>
                       </div>
                       
                       <div>
-                        <div className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>Favorite Genres</div>
+                        <div className={`text-sm ${labelClasses}`}>Favorite Genres</div>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {userProfiles.user1?.favoriteGenres.map((genre: string, index: number) => (
                             <span key={index} className="px-2 py-1 bg-red-600 text-white rounded-md text-xs font-medium">
@@ -490,10 +498,10 @@ const NetflixRecommender = () => {
                       </div>
                       
                       <div>
-                        <div className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>Top Movies</div>
+                        <div className={`text-sm ${labelClasses}`}>Top Movies</div>
                         <ul className="list-disc list-inside mt-1">
                           {userProfiles.user1?.topMovies.map((movie: string, index: number) => (
-                            <li key={index} className={`text-sm ${isDarkTheme ? "text-gray-300" : "text-gray-700"}`}>{movie}</li>
+                            <li key={index} className={`text-sm ${labelClasses}`}>{movie}</li>
                           ))}
                         </ul>
                       </div>
@@ -504,21 +512,21 @@ const NetflixRecommender = () => {
                 {/* User 2 Profile */}
                 <Card className={cardClasses}>
                   <CardContent className="pt-6">
-                    <h3 className="text-lg font-bold mb-4">User 2 Profile</h3>
+                    <h3 className={`text-lg font-bold mb-4 ${headingClasses}`}>User 2 Profile</h3>
                     
                     <div className="space-y-4">
                       <div>
-                        <div className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>Total Ratings</div>
-                        <div className="text-2xl font-bold">{userProfiles.user2?.totalRatings}</div>
+                        <div className={`text-sm ${labelClasses}`}>Total Ratings</div>
+                        <div className={`text-2xl font-bold ${headingClasses}`}>{userProfiles.user2?.totalRatings}</div>
                       </div>
                       
                       <div>
-                        <div className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>Average Rating</div>
-                        <div className="text-2xl font-bold">{userProfiles.user2?.avgRating.toFixed(1)}</div>
+                        <div className={`text-sm ${labelClasses}`}>Average Rating</div>
+                        <div className={`text-2xl font-bold ${headingClasses}`}>{userProfiles.user2?.avgRating.toFixed(1)}</div>
                       </div>
                       
                       <div>
-                        <div className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>Favorite Genres</div>
+                        <div className={`text-sm ${labelClasses}`}>Favorite Genres</div>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {userProfiles.user2?.favoriteGenres.map((genre: string, index: number) => (
                             <span key={index} className="px-2 py-1 bg-red-600 text-white rounded-md text-xs font-medium">
@@ -529,10 +537,10 @@ const NetflixRecommender = () => {
                       </div>
                       
                       <div>
-                        <div className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>Top Movies</div>
+                        <div className={`text-sm ${labelClasses}`}>Top Movies</div>
                         <ul className="list-disc list-inside mt-1">
                           {userProfiles.user2?.topMovies.map((movie: string, index: number) => (
-                            <li key={index} className={`text-sm ${isDarkTheme ? "text-gray-300" : "text-gray-700"}`}>{movie}</li>
+                            <li key={index} className={`text-sm ${labelClasses}`}>{movie}</li>
                           ))}
                         </ul>
                       </div>
