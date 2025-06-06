@@ -261,10 +261,6 @@ const NetflixRecommender = () => {
     ? "text-white font-bold" 
     : "text-gray-900 font-bold";
 
-  const selectClasses = isDarkTheme 
-    ? "bg-gray-700 border-gray-600 text-white" 
-    : "bg-white border-gray-300 text-gray-900";
-
   return (
     <div className={`w-full max-w-6xl mx-auto pb-20 ${themeClasses}`}>
       {/* Theme Toggle */}
@@ -289,12 +285,28 @@ const NetflixRecommender = () => {
                 <div className="space-y-2">
                   <Label htmlFor="user1Id" className={labelClasses}>User ID</Label>
                   <Select value={user1Id} onValueChange={setUser1Id}>
-                    <SelectTrigger className={`${selectClasses} focus:ring-2 focus:ring-red-500`}>
+                    <SelectTrigger className={`h-12 border-2 focus:ring-2 focus:ring-red-500 ${
+                      isDarkTheme 
+                        ? "bg-black border-red-500 text-white hover:bg-gray-900" 
+                        : "bg-white border-red-600 text-black hover:bg-gray-50"
+                    }`}>
                       <SelectValue placeholder="Select User 1" />
                     </SelectTrigger>
-                    <SelectContent className={isDarkTheme ? "bg-gray-800 border-gray-600" : "bg-white border-gray-200"}>
+                    <SelectContent className={`border-2 z-50 ${
+                      isDarkTheme 
+                        ? "bg-black border-red-500" 
+                        : "bg-white border-red-600"
+                    }`}>
                       {availableUsers.map(userId => (
-                        <SelectItem key={userId} value={userId.toString()}>
+                        <SelectItem 
+                          key={userId} 
+                          value={userId.toString()}
+                          className={`${
+                            isDarkTheme 
+                              ? "text-white hover:bg-red-900 focus:bg-red-900" 
+                              : "text-black hover:bg-red-50 focus:bg-red-50"
+                          }`}
+                        >
                           User {userId}
                         </SelectItem>
                       ))}
@@ -308,12 +320,28 @@ const NetflixRecommender = () => {
                 <div className="space-y-2">
                   <Label htmlFor="user2Id" className={labelClasses}>User ID</Label>
                   <Select value={user2Id} onValueChange={setUser2Id}>
-                    <SelectTrigger className={`${selectClasses} focus:ring-2 focus:ring-red-500`}>
+                    <SelectTrigger className={`h-12 border-2 focus:ring-2 focus:ring-red-500 ${
+                      isDarkTheme 
+                        ? "bg-black border-red-500 text-white hover:bg-gray-900" 
+                        : "bg-white border-red-600 text-black hover:bg-gray-50"
+                    }`}>
                       <SelectValue placeholder="Select User 2" />
                     </SelectTrigger>
-                    <SelectContent className={isDarkTheme ? "bg-gray-800 border-gray-600" : "bg-white border-gray-200"}>
+                    <SelectContent className={`border-2 z-50 ${
+                      isDarkTheme 
+                        ? "bg-black border-red-500" 
+                        : "bg-white border-red-600"
+                    }`}>
                       {availableUsers.map(userId => (
-                        <SelectItem key={userId} value={userId.toString()}>
+                        <SelectItem 
+                          key={userId} 
+                          value={userId.toString()}
+                          className={`${
+                            isDarkTheme 
+                              ? "text-white hover:bg-red-900 focus:bg-red-900" 
+                              : "text-black hover:bg-red-50 focus:bg-red-50"
+                          }`}
+                        >
                           User {userId}
                         </SelectItem>
                       ))}
@@ -332,11 +360,21 @@ const NetflixRecommender = () => {
                       id={genre}
                       checked={selectedGenres.includes(genre)}
                       onCheckedChange={(checked) => handleGenreChange(genre, checked as boolean)}
-                      className="border-gray-400"
+                      className={`border-2 ${
+                        selectedGenres.includes(genre) 
+                          ? "border-red-500 bg-red-500" 
+                          : isDarkTheme 
+                            ? "border-red-500" 
+                            : "border-red-600"
+                      }`}
                     />
                     <Label 
                       htmlFor={genre} 
-                      className={`text-sm cursor-pointer ${labelClasses}`}
+                      className={`text-sm cursor-pointer font-medium ${
+                        selectedGenres.includes(genre) 
+                          ? "text-red-500 font-bold" 
+                          : labelClasses
+                      }`}
                     >
                       {genre}
                     </Label>
@@ -353,56 +391,132 @@ const NetflixRecommender = () => {
                 onValueChange={setRecommendationMethod}
                 className="grid grid-cols-2 md:grid-cols-4 gap-4"
               >
-                <div className={`flex items-center space-x-2 border p-3 rounded-md transition-all ${
+                <div className={`flex items-center space-x-2 border-2 p-4 rounded-md transition-all cursor-pointer ${
                   recommendationMethod === 'intersection' 
                     ? isDarkTheme 
-                      ? "border-red-500 bg-red-900/30" 
-                      : "border-red-500 bg-red-50"
+                      ? "border-red-500 bg-red-900/50 shadow-lg" 
+                      : "border-red-600 bg-red-50 shadow-lg"
                     : isDarkTheme 
-                      ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50" 
-                      : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+                      ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50 hover:border-red-400" 
+                      : "border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-red-500"
                 }`}>
-                  <RadioGroupItem value="intersection" id="intersection" className="border-gray-400" />
-                  <Label htmlFor="intersection" className={`flex-grow cursor-pointer ${labelClasses}`}>Intersection</Label>
+                  <RadioGroupItem 
+                    value="intersection" 
+                    id="intersection" 
+                    className={`border-2 ${
+                      recommendationMethod === 'intersection' 
+                        ? "border-red-500 text-red-500" 
+                        : isDarkTheme 
+                          ? "border-gray-400" 
+                          : "border-gray-500"
+                    }`} 
+                  />
+                  <Label 
+                    htmlFor="intersection" 
+                    className={`flex-grow cursor-pointer font-medium ${
+                      recommendationMethod === 'intersection' 
+                        ? "text-red-500 font-bold" 
+                        : labelClasses
+                    }`}
+                  >
+                    Intersection
+                  </Label>
                 </div>
                 
-                <div className={`flex items-center space-x-2 border p-3 rounded-md transition-all ${
+                <div className={`flex items-center space-x-2 border-2 p-4 rounded-md transition-all cursor-pointer ${
                   recommendationMethod === 'weighted' 
                     ? isDarkTheme 
-                      ? "border-red-500 bg-red-900/30" 
-                      : "border-red-500 bg-red-50"
+                      ? "border-red-500 bg-red-900/50 shadow-lg" 
+                      : "border-red-600 bg-red-50 shadow-lg"
                     : isDarkTheme 
-                      ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50" 
-                      : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+                      ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50 hover:border-red-400" 
+                      : "border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-red-500"
                 }`}>
-                  <RadioGroupItem value="weighted" id="weighted" className="border-gray-400" />
-                  <Label htmlFor="weighted" className={`flex-grow cursor-pointer ${labelClasses}`}>Weighted</Label>
+                  <RadioGroupItem 
+                    value="weighted" 
+                    id="weighted" 
+                    className={`border-2 ${
+                      recommendationMethod === 'weighted' 
+                        ? "border-red-500 text-red-500" 
+                        : isDarkTheme 
+                          ? "border-gray-400" 
+                          : "border-gray-500"
+                    }`} 
+                  />
+                  <Label 
+                    htmlFor="weighted" 
+                    className={`flex-grow cursor-pointer font-medium ${
+                      recommendationMethod === 'weighted' 
+                        ? "text-red-500 font-bold" 
+                        : labelClasses
+                    }`}
+                  >
+                    Weighted
+                  </Label>
                 </div>
                 
-                <div className={`flex items-center space-x-2 border p-3 rounded-md transition-all ${
+                <div className={`flex items-center space-x-2 border-2 p-4 rounded-md transition-all cursor-pointer ${
                   recommendationMethod === 'least-misery' 
                     ? isDarkTheme 
-                      ? "border-red-500 bg-red-900/30" 
-                      : "border-red-500 bg-red-50"
+                      ? "border-red-500 bg-red-900/50 shadow-lg" 
+                      : "border-red-600 bg-red-50 shadow-lg"
                     : isDarkTheme 
-                      ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50" 
-                      : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+                      ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50 hover:border-red-400" 
+                      : "border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-red-500"
                 }`}>
-                  <RadioGroupItem value="least-misery" id="least-misery" className="border-gray-400" />
-                  <Label htmlFor="least-misery" className={`flex-grow cursor-pointer ${labelClasses}`}>Least Misery</Label>
+                  <RadioGroupItem 
+                    value="least-misery" 
+                    id="least-misery" 
+                    className={`border-2 ${
+                      recommendationMethod === 'least-misery' 
+                        ? "border-red-500 text-red-500" 
+                        : isDarkTheme 
+                          ? "border-gray-400" 
+                          : "border-gray-500"
+                    }`} 
+                  />
+                  <Label 
+                    htmlFor="least-misery" 
+                    className={`flex-grow cursor-pointer font-medium ${
+                      recommendationMethod === 'least-misery' 
+                        ? "text-red-500 font-bold" 
+                        : labelClasses
+                    }`}
+                  >
+                    Least Misery
+                  </Label>
                 </div>
                 
-                <div className={`flex items-center space-x-2 border p-3 rounded-md transition-all ${
+                <div className={`flex items-center space-x-2 border-2 p-4 rounded-md transition-all cursor-pointer ${
                   recommendationMethod === 'hybrid' 
                     ? isDarkTheme 
-                      ? "border-red-500 bg-red-900/30" 
-                      : "border-red-500 bg-red-50"
+                      ? "border-red-500 bg-red-900/50 shadow-lg" 
+                      : "border-red-600 bg-red-50 shadow-lg"
                     : isDarkTheme 
-                      ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50" 
-                      : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+                      ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50 hover:border-red-400" 
+                      : "border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-red-500"
                 }`}>
-                  <RadioGroupItem value="hybrid" id="hybrid" className="border-gray-400" />
-                  <Label htmlFor="hybrid" className={`flex-grow cursor-pointer ${labelClasses}`}>Hybrid</Label>
+                  <RadioGroupItem 
+                    value="hybrid" 
+                    id="hybrid" 
+                    className={`border-2 ${
+                      recommendationMethod === 'hybrid' 
+                        ? "border-red-500 text-red-500" 
+                        : isDarkTheme 
+                          ? "border-gray-400" 
+                          : "border-gray-500"
+                    }`} 
+                  />
+                  <Label 
+                    htmlFor="hybrid" 
+                    className={`flex-grow cursor-pointer font-medium ${
+                      recommendationMethod === 'hybrid' 
+                        ? "text-red-500 font-bold" 
+                        : labelClasses
+                    }`}
+                  >
+                    Hybrid
+                  </Label>
                 </div>
               </RadioGroup>
             </div>
