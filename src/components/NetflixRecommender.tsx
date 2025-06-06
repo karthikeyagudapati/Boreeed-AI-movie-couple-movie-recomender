@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FilmIcon, Users, ChartBar, Play, Star, Moon, Sun } from "lucide-react";
+import { FilmIcon, Users, ChartBar, Play, Star, Moon, Sun, Eye, EyeOff } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -22,6 +22,8 @@ interface Movie {
   user1Score?: number;
   user2Score?: number;
   confidenceScore: number;
+  poster?: string;
+  watched?: boolean;
 }
 
 const NetflixRecommender = () => {
@@ -37,6 +39,7 @@ const NetflixRecommender = () => {
   const [userProfiles, setUserProfiles] = useState<any>({});
   const [activeTab, setActiveTab] = useState<string>('recommendations');
   const [showDetailedExplanation, setShowDetailedExplanation] = useState<boolean>(false);
+  const [watchedMovies, setWatchedMovies] = useState<Set<number>>(new Set());
 
   // Available user IDs and genres
   const availableUsers = Array.from({ length: 11 }, (_, i) => i + 2); // 2-12
@@ -46,7 +49,7 @@ const NetflixRecommender = () => {
     'Romance', 'Science Fiction', 'Thriller', 'War', 'Western'
   ];
 
-  // Sample movie data (in a real app, this would come from the API)
+  // Extended sample movie data with more movies and poster images
   const sampleMovies: Movie[] = [
     { 
       id: 1, 
@@ -56,7 +59,8 @@ const NetflixRecommender = () => {
       score: 4.8,
       user1Score: 4.9,
       user2Score: 4.7, 
-      confidenceScore: 0.92 
+      confidenceScore: 0.92,
+      poster: 'https://images.unsplash.com/photo-1489599828705-0ec3b478e4fa?w=300&h=450&fit=crop'
     },
     { 
       id: 2, 
@@ -66,7 +70,8 @@ const NetflixRecommender = () => {
       score: 4.7, 
       user1Score: 4.8,
       user2Score: 4.6,
-      confidenceScore: 0.89 
+      confidenceScore: 0.89,
+      poster: 'https://images.unsplash.com/photo-1478720568477-b0c8f11b9c4e?w=300&h=450&fit=crop'
     },
     { 
       id: 3, 
@@ -76,7 +81,8 @@ const NetflixRecommender = () => {
       score: 4.6, 
       user1Score: 4.4,
       user2Score: 4.8,
-      confidenceScore: 0.88 
+      confidenceScore: 0.88,
+      poster: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=300&h=450&fit=crop'
     },
     { 
       id: 4, 
@@ -86,7 +92,8 @@ const NetflixRecommender = () => {
       score: 4.5, 
       user1Score: 4.7,
       user2Score: 4.3,
-      confidenceScore: 0.85 
+      confidenceScore: 0.85,
+      poster: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=450&fit=crop'
     },
     { 
       id: 5, 
@@ -96,7 +103,8 @@ const NetflixRecommender = () => {
       score: 4.4, 
       user1Score: 4.3,
       user2Score: 4.5,
-      confidenceScore: 0.83 
+      confidenceScore: 0.83,
+      poster: 'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=300&h=450&fit=crop'
     },
     { 
       id: 6, 
@@ -106,7 +114,8 @@ const NetflixRecommender = () => {
       score: 4.3, 
       user1Score: 4.5,
       user2Score: 4.1,
-      confidenceScore: 0.8 
+      confidenceScore: 0.8,
+      poster: 'https://images.unsplash.com/photo-1489599828705-0ec3b478e4fa?w=300&h=450&fit=crop'
     },
     { 
       id: 7, 
@@ -116,7 +125,41 @@ const NetflixRecommender = () => {
       score: 4.3, 
       user1Score: 4.2,
       user2Score: 4.4,
-      confidenceScore: 0.79 
+      confidenceScore: 0.79,
+      poster: 'https://images.unsplash.com/photo-1478720568477-b0c8f11b9c4e?w=300&h=450&fit=crop'
+    },
+    { 
+      id: 8, 
+      title: 'Interstellar', 
+      genres: ['Adventure', 'Drama', 'Science Fiction'], 
+      year: 2014, 
+      score: 4.2, 
+      user1Score: 4.1,
+      user2Score: 4.3,
+      confidenceScore: 0.78,
+      poster: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=450&fit=crop'
+    },
+    { 
+      id: 9, 
+      title: 'Forrest Gump', 
+      genres: ['Comedy', 'Drama', 'Romance'], 
+      year: 1994, 
+      score: 4.1, 
+      user1Score: 4.0,
+      user2Score: 4.2,
+      confidenceScore: 0.76,
+      poster: 'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=300&h=450&fit=crop'
+    },
+    { 
+      id: 10, 
+      title: 'The Godfather', 
+      genres: ['Crime', 'Drama'], 
+      year: 1972, 
+      score: 4.0, 
+      user1Score: 3.9,
+      user2Score: 4.1,
+      confidenceScore: 0.75,
+      poster: 'https://images.unsplash.com/photo-1489599828705-0ec3b478e4fa?w=300&h=450&fit=crop'
     }
   ];
 
@@ -143,6 +186,17 @@ const NetflixRecommender = () => {
     } else {
       setSelectedGenres(selectedGenres.filter(g => g !== genre));
     }
+  };
+
+  // Handle watched movie toggle
+  const toggleWatched = (movieId: number) => {
+    const newWatchedMovies = new Set(watchedMovies);
+    if (watchedMovies.has(movieId)) {
+      newWatchedMovies.delete(movieId);
+    } else {
+      newWatchedMovies.add(movieId);
+    }
+    setWatchedMovies(newWatchedMovies);
   };
 
   // Handle form submission
@@ -182,7 +236,7 @@ const NetflixRecommender = () => {
     return (
       <div className="flex items-center gap-2">
         <Progress value={percentage} className="h-2 w-24" />
-        <span className="text-sm font-medium text-white">{score.toFixed(1)}</span>
+        <span className="text-sm font-medium">{score.toFixed(1)}</span>
       </div>
     );
   };
@@ -200,12 +254,16 @@ const NetflixRecommender = () => {
     : "bg-white border-gray-300 text-gray-900 placeholder:text-gray-500";
 
   const labelClasses = isDarkTheme 
-    ? "text-white font-medium" 
-    : "text-gray-900 font-medium";
-
-  const headingClasses = isDarkTheme 
     ? "text-white font-semibold" 
     : "text-gray-900 font-semibold";
+
+  const headingClasses = isDarkTheme 
+    ? "text-white font-bold" 
+    : "text-gray-900 font-bold";
+
+  const selectClasses = isDarkTheme 
+    ? "bg-gray-700 border-gray-600 text-white" 
+    : "bg-white border-gray-300 text-gray-900";
 
   return (
     <div className={`w-full max-w-6xl mx-auto pb-20 ${themeClasses}`}>
@@ -231,7 +289,7 @@ const NetflixRecommender = () => {
                 <div className="space-y-2">
                   <Label htmlFor="user1Id" className={labelClasses}>User ID</Label>
                   <Select value={user1Id} onValueChange={setUser1Id}>
-                    <SelectTrigger className={inputClasses}>
+                    <SelectTrigger className={`${selectClasses} focus:ring-2 focus:ring-red-500`}>
                       <SelectValue placeholder="Select User 1" />
                     </SelectTrigger>
                     <SelectContent className={isDarkTheme ? "bg-gray-800 border-gray-600" : "bg-white border-gray-200"}>
@@ -250,7 +308,7 @@ const NetflixRecommender = () => {
                 <div className="space-y-2">
                   <Label htmlFor="user2Id" className={labelClasses}>User ID</Label>
                   <Select value={user2Id} onValueChange={setUser2Id}>
-                    <SelectTrigger className={inputClasses}>
+                    <SelectTrigger className={`${selectClasses} focus:ring-2 focus:ring-red-500`}>
                       <SelectValue placeholder="Select User 2" />
                     </SelectTrigger>
                     <SelectContent className={isDarkTheme ? "bg-gray-800 border-gray-600" : "bg-white border-gray-200"}>
@@ -295,29 +353,53 @@ const NetflixRecommender = () => {
                 onValueChange={setRecommendationMethod}
                 className="grid grid-cols-2 md:grid-cols-4 gap-4"
               >
-                <div className={`flex items-center space-x-2 border p-3 rounded-md hover:bg-opacity-50 ${
-                  isDarkTheme ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50" : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+                <div className={`flex items-center space-x-2 border p-3 rounded-md transition-all ${
+                  recommendationMethod === 'intersection' 
+                    ? isDarkTheme 
+                      ? "border-red-500 bg-red-900/30" 
+                      : "border-red-500 bg-red-50"
+                    : isDarkTheme 
+                      ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50" 
+                      : "border-gray-300 bg-gray-50 hover:bg-gray-100"
                 }`}>
                   <RadioGroupItem value="intersection" id="intersection" className="border-gray-400" />
                   <Label htmlFor="intersection" className={`flex-grow cursor-pointer ${labelClasses}`}>Intersection</Label>
                 </div>
                 
-                <div className={`flex items-center space-x-2 border p-3 rounded-md hover:bg-opacity-50 ${
-                  isDarkTheme ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50" : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+                <div className={`flex items-center space-x-2 border p-3 rounded-md transition-all ${
+                  recommendationMethod === 'weighted' 
+                    ? isDarkTheme 
+                      ? "border-red-500 bg-red-900/30" 
+                      : "border-red-500 bg-red-50"
+                    : isDarkTheme 
+                      ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50" 
+                      : "border-gray-300 bg-gray-50 hover:bg-gray-100"
                 }`}>
                   <RadioGroupItem value="weighted" id="weighted" className="border-gray-400" />
                   <Label htmlFor="weighted" className={`flex-grow cursor-pointer ${labelClasses}`}>Weighted</Label>
                 </div>
                 
-                <div className={`flex items-center space-x-2 border p-3 rounded-md hover:bg-opacity-50 ${
-                  isDarkTheme ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50" : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+                <div className={`flex items-center space-x-2 border p-3 rounded-md transition-all ${
+                  recommendationMethod === 'least-misery' 
+                    ? isDarkTheme 
+                      ? "border-red-500 bg-red-900/30" 
+                      : "border-red-500 bg-red-50"
+                    : isDarkTheme 
+                      ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50" 
+                      : "border-gray-300 bg-gray-50 hover:bg-gray-100"
                 }`}>
                   <RadioGroupItem value="least-misery" id="least-misery" className="border-gray-400" />
                   <Label htmlFor="least-misery" className={`flex-grow cursor-pointer ${labelClasses}`}>Least Misery</Label>
                 </div>
                 
-                <div className={`flex items-center space-x-2 border p-3 rounded-md hover:bg-opacity-50 ${
-                  isDarkTheme ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50" : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+                <div className={`flex items-center space-x-2 border p-3 rounded-md transition-all ${
+                  recommendationMethod === 'hybrid' 
+                    ? isDarkTheme 
+                      ? "border-red-500 bg-red-900/30" 
+                      : "border-red-500 bg-red-50"
+                    : isDarkTheme 
+                      ? "border-gray-600 bg-gray-700/50 hover:bg-gray-600/50" 
+                      : "border-gray-300 bg-gray-50 hover:bg-gray-100"
                 }`}>
                   <RadioGroupItem value="hybrid" id="hybrid" className="border-gray-400" />
                   <Label htmlFor="hybrid" className={`flex-grow cursor-pointer ${labelClasses}`}>Hybrid</Label>
@@ -397,14 +479,24 @@ const NetflixRecommender = () => {
               
               <div className="space-y-4">
                 {results.map((movie) => (
-                  <Card key={movie.id} className={`overflow-hidden hover:shadow-xl transition-shadow ${cardClasses}`}>
+                  <Card key={movie.id} className={`overflow-hidden hover:shadow-xl transition-shadow ${cardClasses} ${watchedMovies.has(movie.id) ? 'opacity-60' : ''}`}>
                     <CardContent className="p-0">
                       <div className="flex flex-col md:flex-row">
                         {/* Movie Poster */}
-                        <div className={`w-full md:w-1/4 h-[180px] md:h-auto flex items-center justify-center ${
-                          isDarkTheme ? "bg-gray-700" : "bg-gray-200"
-                        }`}>
-                          <Play className={`h-12 w-12 ${isDarkTheme ? "text-gray-400" : "text-gray-500"}`} />
+                        <div className="w-full md:w-1/4 h-[180px] md:h-auto relative">
+                          <img 
+                            src={movie.poster} 
+                            alt={movie.title}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjQ1MCIgdmlld0JveD0iMCAwIDMwMCA0NTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iNDUwIiBmaWxsPSIjMzc0MTUxIi8+CjxwYXRoIGQ9Ik0xNTAgMjI1TDE3NSAyMDBIMTI1TDE1MCAyMjVaIiBmaWxsPSIjNjM2MzYzIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMjcwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM5Q0E0QUYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk1vdmllIFBvc3RlcjwvdGV4dD4KPC9zdmc+';
+                            }}
+                          />
+                          {watchedMovies.has(movie.id) && (
+                            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                              <Eye className="h-8 w-8 text-white" />
+                            </div>
+                          )}
                         </div>
                         
                         {/* Movie Information */}
@@ -419,14 +511,19 @@ const NetflixRecommender = () => {
                               </div>
                             </div>
                             
-                            <div className="flex items-center mt-2 md:mt-0">
+                            <div className="flex items-center gap-2 mt-2 md:mt-0">
                               <div className="flex items-center bg-red-600 px-3 py-2 rounded-md">
                                 <Star className="w-4 h-4 text-white mr-1" />
                                 <span className="text-white font-bold">{movie.score.toFixed(1)}</span>
                               </div>
-                              <div className={`ml-2 text-xs ${isDarkTheme ? "text-gray-400" : "text-gray-500"}`}>
-                                {movie.confidenceScore >= 0.8 ? 'High confidence' : 'Medium confidence'}
-                              </div>
+                              <Button
+                                onClick={() => toggleWatched(movie.id)}
+                                variant="outline"
+                                size="sm"
+                                className={`${watchedMovies.has(movie.id) ? 'bg-green-600 text-white' : ''}`}
+                              >
+                                {watchedMovies.has(movie.id) ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                              </Button>
                             </div>
                           </div>
                           

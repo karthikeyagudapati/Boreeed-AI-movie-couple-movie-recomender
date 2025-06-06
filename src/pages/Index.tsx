@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Github, FileText, Play, Moon, Sun } from "lucide-react";
+import { Github, FileText, Play, Moon, Sun, Phone, ExternalLink } from "lucide-react";
 
 const Index = () => {
   const [isDarkTheme, setIsDarkTheme] = useState<boolean>(true);
@@ -52,7 +52,11 @@ const Index = () => {
                 />
                 <Moon className="h-4 w-4" />
               </div>
-              <Button variant={buttonVariant} className={`${isDarkTheme ? "text-white hover:text-gray-300 hover:bg-gray-800" : "text-gray-900 hover:bg-gray-100"}`}>
+              <Button 
+                variant={buttonVariant} 
+                className={`${isDarkTheme ? "text-white hover:text-gray-300 hover:bg-gray-800" : "text-gray-900 hover:bg-gray-100"}`}
+                onClick={() => window.open('https://github.com/karthikeyagudapati', '_blank')}
+              >
                 <Github className="w-4 h-4 mr-2" />
                 GitHub
               </Button>
@@ -85,10 +89,10 @@ const Index = () => {
               </Button>
               <Button 
                 variant="outline" 
-                className={`px-8 py-3 text-lg font-semibold ${
+                className={`px-8 py-3 text-lg font-semibold border-2 ${
                   isDarkTheme 
-                    ? "border-gray-400 text-white hover:bg-gray-800 bg-gray-900/50" 
-                    : "border-gray-600 text-gray-900 hover:bg-gray-100 bg-white"
+                    ? "border-white text-white hover:bg-white hover:text-black bg-transparent" 
+                    : "border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white bg-transparent"
                 }`}
               >
                 Learn More
@@ -140,6 +144,57 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Developer Section */}
+      <div className={`py-12 px-4 ${isDarkTheme ? "bg-gray-900/50" : "bg-gray-100/30"}`}>
+        <div className="max-w-7xl mx-auto">
+          <Card className={`${cardClasses} shadow-xl`}>
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <h3 className={`text-2xl font-bold mb-4 ${isDarkTheme ? "text-white" : "text-gray-900"}`}>
+                  Built by Karthikeya Gudapati
+                </h3>
+                <p className={`text-lg mb-6 ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>
+                  Passionate about AI, Machine Learning, and creating innovative recommendation systems
+                </p>
+                
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <Button 
+                    variant="outline"
+                    className={`flex items-center gap-2 ${
+                      isDarkTheme 
+                        ? "border-gray-400 text-white hover:bg-gray-800" 
+                        : "border-gray-600 text-gray-900 hover:bg-gray-100"
+                    }`}
+                    onClick={() => window.open('https://github.com/karthikeyagudapati', '_blank')}
+                  >
+                    <Github className="w-4 h-4" />
+                    GitHub Profile
+                    <ExternalLink className="w-3 h-3" />
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className={`flex items-center gap-2 ${
+                      isDarkTheme 
+                        ? "border-gray-400 text-white hover:bg-gray-800" 
+                        : "border-gray-600 text-gray-900 hover:bg-gray-100"
+                    }`}
+                    onClick={() => window.open('tel:+918309480281', '_blank')}
+                  >
+                    <Phone className="w-4 h-4" />
+                    +91 8309480281
+                  </Button>
+                </div>
+                
+                <div className={`mt-4 text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>
+                  Open to collaboration and new opportunities in AI/ML
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
       {/* Footer */}
       <footer className={`py-12 px-4 border-t ${isDarkTheme ? "bg-black border-gray-800" : "bg-white border-gray-200"}`}>
         <div className="max-w-7xl mx-auto text-center">
@@ -152,6 +207,9 @@ const Index = () => {
           </p>
           <div className={`mt-4 text-xs ${isDarkTheme ? "text-gray-500" : "text-gray-500"}`}>
             This is a portfolio project demonstrating joint recommendation systems
+          </div>
+          <div className={`mt-2 text-xs font-medium ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>
+            © 2024 Karthikeya Gudapati - All rights reserved
           </div>
         </div>
       </footer>
