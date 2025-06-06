@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Movie {
   id: number;
@@ -49,7 +50,7 @@ const NetflixRecommender = () => {
     'Romance', 'Science Fiction', 'Thriller', 'War', 'Western'
   ];
 
-  // Extended sample movie data with more movies and poster images
+  // Extended sample movie data with minimum 15 movies
   const sampleMovies: Movie[] = [
     { 
       id: 1, 
@@ -160,6 +161,61 @@ const NetflixRecommender = () => {
       user2Score: 4.1,
       confidenceScore: 0.75,
       poster: 'https://images.unsplash.com/photo-1489599828705-0ec3b478e4fa?w=300&h=450&fit=crop'
+    },
+    { 
+      id: 11, 
+      title: 'The Avengers', 
+      genres: ['Action', 'Adventure', 'Science Fiction'], 
+      year: 2012, 
+      score: 3.9, 
+      user1Score: 3.8,
+      user2Score: 4.0,
+      confidenceScore: 0.73,
+      poster: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=300&h=450&fit=crop'
+    },
+    { 
+      id: 12, 
+      title: 'Titanic', 
+      genres: ['Drama', 'Romance'], 
+      year: 1997, 
+      score: 3.8, 
+      user1Score: 3.7,
+      user2Score: 3.9,
+      confidenceScore: 0.71,
+      poster: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=450&fit=crop'
+    },
+    { 
+      id: 13, 
+      title: 'The Lion King', 
+      genres: ['Animation', 'Adventure', 'Drama'], 
+      year: 1994, 
+      score: 3.7, 
+      user1Score: 3.6,
+      user2Score: 3.8,
+      confidenceScore: 0.69,
+      poster: 'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=300&h=450&fit=crop'
+    },
+    { 
+      id: 14, 
+      title: 'Star Wars: A New Hope', 
+      genres: ['Adventure', 'Fantasy', 'Science Fiction'], 
+      year: 1977, 
+      score: 3.6, 
+      user1Score: 3.5,
+      user2Score: 3.7,
+      confidenceScore: 0.67,
+      poster: 'https://images.unsplash.com/photo-1478720568477-b0c8f11b9c4e?w=300&h=450&fit=crop'
+    },
+    { 
+      id: 15, 
+      title: 'Jurassic Park', 
+      genres: ['Adventure', 'Science Fiction', 'Thriller'], 
+      year: 1993, 
+      score: 3.5, 
+      user1Score: 3.4,
+      user2Score: 3.6,
+      confidenceScore: 0.65,
+      poster: 'https://images.unsplash.com/photo-1489599828705-0ec3b478e4fa?w=300&h=450&fit=crop'
     }
   ];
 
@@ -179,7 +235,6 @@ const NetflixRecommender = () => {
     }
   };
 
-  // Handle genre selection
   const handleGenreChange = (genre: string, checked: boolean) => {
     if (checked) {
       setSelectedGenres([...selectedGenres, genre]);
@@ -188,7 +243,6 @@ const NetflixRecommender = () => {
     }
   };
 
-  // Handle watched movie toggle
   const toggleWatched = (movieId: number) => {
     const newWatchedMovies = new Set(watchedMovies);
     if (watchedMovies.has(movieId)) {
@@ -206,12 +260,19 @@ const NetflixRecommender = () => {
     
     // Simulate API call delay
     setTimeout(() => {
-      // Filter movies by selected genres if any
+      // Filter movies by selected genres if any, ensure minimum 10 results
       let filteredMovies = sampleMovies;
       if (selectedGenres.length > 0) {
         filteredMovies = sampleMovies.filter(movie => 
           movie.genres.some(genre => selectedGenres.includes(genre))
         );
+        // If filtered results are less than 10, add more movies to reach minimum
+        if (filteredMovies.length < 10) {
+          const remainingMovies = sampleMovies.filter(movie => 
+            !filteredMovies.some(fm => fm.id === movie.id)
+          );
+          filteredMovies = [...filteredMovies, ...remainingMovies.slice(0, 10 - filteredMovies.length)];
+        }
       }
       
       setResults(filteredMovies);
@@ -230,7 +291,6 @@ const NetflixRecommender = () => {
     return "Very different tastes";
   };
 
-  // Function to render a progress bar based on a score (0-5)
   const renderScore = (score: number) => {
     const percentage = (score / 5) * 100;
     return (
@@ -580,7 +640,9 @@ const NetflixRecommender = () => {
             {/* Recommendations Tab */}
             <TabsContent value="recommendations" className="space-y-6">
               <div className="flex justify-between items-center mb-4">
-                <h2 className={`text-xl font-bold ${headingClasses}`}>Recommended For Both of You</h2>
+                <h2 className={`text-xl font-bold ${headingClasses}`}>
+                  Recommended For Both of You ({results.length} movies)
+                </h2>
                 
                 <div className="flex items-center gap-2">
                   <span className={`text-sm ${labelClasses}`}>Show Details</span>
@@ -591,97 +653,99 @@ const NetflixRecommender = () => {
                 </div>
               </div>
               
-              <div className="space-y-4">
-                {results.map((movie) => (
-                  <Card key={movie.id} className={`overflow-hidden hover:shadow-xl transition-shadow ${cardClasses} ${watchedMovies.has(movie.id) ? 'opacity-60' : ''}`}>
-                    <CardContent className="p-0">
-                      <div className="flex flex-col md:flex-row">
-                        {/* Movie Poster */}
-                        <div className="w-full md:w-1/4 h-[180px] md:h-auto relative">
-                          <img 
-                            src={movie.poster} 
-                            alt={movie.title}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjQ1MCIgdmlld0JveD0iMCAwIDMwMCA0NTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iNDUwIiBmaWxsPSIjMzc0MTUxIi8+CjxwYXRoIGQ9Ik0xNTAgMjI1TDE3NSAyMDBIMTI1TDE1MCAyMjVaIiBmaWxsPSIjNjM2MzYzIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMjcwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM5Q0E0QUYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk1vdmllIFBvc3RlcjwvdGV4dD4KPC9zdmc+';
-                            }}
-                          />
-                          {watchedMovies.has(movie.id) && (
-                            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                              <Eye className="h-8 w-8 text-white" />
-                            </div>
-                          )}
-                        </div>
-                        
-                        {/* Movie Information */}
-                        <div className="p-4 md:p-6 flex-1">
-                          <div className="flex flex-col md:flex-row justify-between">
-                            <div>
-                              <h3 className={`text-xl font-bold ${headingClasses}`}>{movie.title}</h3>
-                              <div className="flex items-center gap-2 mt-1">
-                                <span className={`text-sm font-medium ${labelClasses}`}>{movie.year}</span>
-                                <span className={`w-1 h-1 rounded-full ${isDarkTheme ? "bg-gray-500" : "bg-gray-400"}`}></span>
-                                <span className={`text-sm ${labelClasses}`}>{movie.genres.join(', ')}</span>
+              {/* Scrollable movie results */}
+              <ScrollArea className="h-[600px] w-full rounded-md border p-4">
+                <div className="space-y-4">
+                  {results.map((movie) => (
+                    <Card key={movie.id} className={`overflow-hidden hover:shadow-xl transition-shadow ${cardClasses} ${watchedMovies.has(movie.id) ? 'opacity-60' : ''}`}>
+                      <CardContent className="p-0">
+                        <div className="flex flex-col md:flex-row">
+                          {/* Movie Poster */}
+                          <div className="w-full md:w-1/4 h-[180px] md:h-auto relative">
+                            <img 
+                              src={movie.poster} 
+                              alt={movie.title}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjQ1MCIgdmlld0JveD0iMCAwIDMwMCA0NTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iNDUwIiBmaWxsPSIjMzc0MTUxIi8+CjxwYXRoIGQ9Ik0xNTAgMjI1TDE3NSAyMDBIMTI1TDE1MCAyMjVaIiBmaWxsPSIjNjM2MzYzIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMjcwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM5Q0E0QUYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk1vdmllIFBvc3RlcjwvdGV4dD4KPC9zdmc+';
+                              }}
+                            />
+                            {watchedMovies.has(movie.id) && (
+                              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                                <Eye className="h-8 w-8 text-white" />
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Movie Information */}
+                          <div className="p-4 md:p-6 flex-1">
+                            <div className="flex flex-col md:flex-row justify-between">
+                              <div>
+                                <h3 className={`text-xl font-bold ${headingClasses}`}>{movie.title}</h3>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <span className={`text-sm font-medium ${labelClasses}`}>{movie.year}</span>
+                                  <span className={`w-1 h-1 rounded-full ${isDarkTheme ? "bg-gray-500" : "bg-gray-400"}`}></span>
+                                  <span className={`text-sm ${labelClasses}`}>{movie.genres.join(', ')}</span>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center gap-2 mt-2 md:mt-0">
+                                <div className="flex items-center bg-red-600 px-3 py-2 rounded-md">
+                                  <Star className="w-4 h-4 text-white mr-1" />
+                                  <span className="text-white font-bold">{movie.score.toFixed(1)}</span>
+                                </div>
+                                <Button
+                                  onClick={() => toggleWatched(movie.id)}
+                                  variant="outline"
+                                  size="sm"
+                                  className={`${watchedMovies.has(movie.id) ? 'bg-green-600 text-white' : ''}`}
+                                >
+                                  {watchedMovies.has(movie.id) ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                                </Button>
                               </div>
                             </div>
                             
-                            <div className="flex items-center gap-2 mt-2 md:mt-0">
-                              <div className="flex items-center bg-red-600 px-3 py-2 rounded-md">
-                                <Star className="w-4 h-4 text-white mr-1" />
-                                <span className="text-white font-bold">{movie.score.toFixed(1)}</span>
+                            {showDetailedExplanation && (
+                              <div className="mt-4 space-y-3">
+                                <Separator className={isDarkTheme ? "bg-gray-600" : "bg-gray-300"} />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                      <span className={`text-sm font-medium ${labelClasses}`}>User 1 Score:</span>
+                                      {renderScore(movie.user1Score || 0)}
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                      <span className={`text-sm font-medium ${labelClasses}`}>User 2 Score:</span>
+                                      {renderScore(movie.user2Score || 0)}
+                                    </div>
+                                  </div>
+                                  
+                                  <div>
+                                    <h4 className={`text-sm font-medium mb-1 ${headingClasses}`}>Why this movie?</h4>
+                                    <p className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>
+                                      {
+                                        movie.user1Score && movie.user2Score && 
+                                        Math.abs(movie.user1Score - movie.user2Score) < 0.5 
+                                          ? "Both users are predicted to enjoy this movie at similar levels." 
+                                          : "This movie balances the preferences of both users."
+                                      }
+                                    </p>
+                                  </div>
+                                </div>
                               </div>
-                              <Button
-                                onClick={() => toggleWatched(movie.id)}
-                                variant="outline"
-                                size="sm"
-                                className={`${watchedMovies.has(movie.id) ? 'bg-green-600 text-white' : ''}`}
-                              >
-                                {watchedMovies.has(movie.id) ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                              </Button>
-                            </div>
+                            )}
                           </div>
-                          
-                          {showDetailedExplanation && (
-                            <div className="mt-4 space-y-3">
-                              <Separator className={isDarkTheme ? "bg-gray-600" : "bg-gray-300"} />
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                  <div className="flex items-center justify-between">
-                                    <span className={`text-sm font-medium ${labelClasses}`}>User 1 Score:</span>
-                                    {renderScore(movie.user1Score || 0)}
-                                  </div>
-                                  <div className="flex items-center justify-between">
-                                    <span className={`text-sm font-medium ${labelClasses}`}>User 2 Score:</span>
-                                    {renderScore(movie.user2Score || 0)}
-                                  </div>
-                                </div>
-                                
-                                <div>
-                                  <h4 className={`text-sm font-medium mb-1 ${headingClasses}`}>Why this movie?</h4>
-                                  <p className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>
-                                    {
-                                      movie.user1Score && movie.user2Score && 
-                                      Math.abs(movie.user1Score - movie.user2Score) < 0.5 
-                                        ? "Both users are predicted to enjoy this movie at similar levels." 
-                                        : "This movie balances the preferences of both users."
-                                    }
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          )}
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </ScrollArea>
             </TabsContent>
 
             {/* Analysis Tab */}
             <TabsContent value="analysis">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* User 1 Profile */}
                 <Card className={cardClasses}>
                   <CardContent className="pt-6">
                     <h3 className={`text-lg font-bold mb-4 ${headingClasses}`}>User 1 Profile</h3>
@@ -720,7 +784,6 @@ const NetflixRecommender = () => {
                   </CardContent>
                 </Card>
 
-                {/* User 2 Profile */}
                 <Card className={cardClasses}>
                   <CardContent className="pt-6">
                     <h3 className={`text-lg font-bold mb-4 ${headingClasses}`}>User 2 Profile</h3>
