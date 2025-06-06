@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import NetflixRecommender from "@/components/NetflixRecommender";
 import RecommendationVisualizations from "@/components/RecommendationVisualizations";
@@ -6,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Github, FileText, Play, Moon, Sun, Phone, ExternalLink } from "lucide-react";
+import { Github, FileText, Play, Moon, Sun, Phone, ExternalLink, Linkedin } from "lucide-react";
 
 const Index = () => {
   const [isDarkTheme, setIsDarkTheme] = useState<boolean>(true);
@@ -60,7 +59,11 @@ const Index = () => {
                 <Github className="w-4 h-4 mr-2" />
                 GitHub
               </Button>
-              <Button variant={buttonVariant} className={`${isDarkTheme ? "text-white hover:text-gray-300 hover:bg-gray-800" : "text-gray-900 hover:bg-gray-100"}`}>
+              <Button 
+                variant={buttonVariant} 
+                className={`${isDarkTheme ? "text-white hover:text-gray-300 hover:bg-gray-800" : "text-gray-900 hover:bg-gray-100"}`}
+                onClick={() => window.open('/docs', '_blank')}
+              >
                 <FileText className="w-4 h-4 mr-2" />
                 Docs
               </Button>
@@ -169,6 +172,20 @@ const Index = () => {
                   >
                     <Github className="w-4 h-4" />
                     GitHub Profile
+                    <ExternalLink className="w-3 h-3" />
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className={`flex items-center gap-2 font-semibold border-2 ${
+                      isDarkTheme 
+                        ? "border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white bg-transparent" 
+                        : "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white bg-transparent"
+                    }`}
+                    onClick={() => window.open('https://www.linkedin.com/in/karthikeya-gudapati-6a5b52266', '_blank')}
+                  >
+                    <Linkedin className="w-4 h-4" />
+                    LinkedIn Profile
                     <ExternalLink className="w-3 h-3" />
                   </Button>
                   
