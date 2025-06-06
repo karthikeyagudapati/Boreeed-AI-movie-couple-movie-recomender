@@ -160,10 +160,10 @@ const Index = () => {
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <Button 
                     variant="outline"
-                    className={`flex items-center gap-2 ${
+                    className={`flex items-center gap-2 font-semibold border-2 ${
                       isDarkTheme 
-                        ? "border-gray-400 text-white hover:bg-gray-800" 
-                        : "border-gray-600 text-gray-900 hover:bg-gray-100"
+                        ? "border-red-500 text-red-400 hover:bg-red-600 hover:text-white bg-transparent" 
+                        : "border-red-600 text-red-600 hover:bg-red-600 hover:text-white bg-transparent"
                     }`}
                     onClick={() => window.open('https://github.com/karthikeyagudapati', '_blank')}
                   >
@@ -174,10 +174,10 @@ const Index = () => {
                   
                   <Button 
                     variant="outline"
-                    className={`flex items-center gap-2 ${
+                    className={`flex items-center gap-2 font-semibold border-2 ${
                       isDarkTheme 
-                        ? "border-gray-400 text-white hover:bg-gray-800" 
-                        : "border-gray-600 text-gray-900 hover:bg-gray-100"
+                        ? "border-green-500 text-green-400 hover:bg-green-600 hover:text-white bg-transparent" 
+                        : "border-green-600 text-green-600 hover:bg-green-600 hover:text-white bg-transparent"
                     }`}
                     onClick={() => window.open('tel:+918309480281', '_blank')}
                   >
@@ -186,7 +186,7 @@ const Index = () => {
                   </Button>
                 </div>
                 
-                <div className={`mt-4 text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>
+                <div className={`mt-4 text-sm font-medium ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>
                   Open to collaboration and new opportunities in AI/ML
                 </div>
               </div>
