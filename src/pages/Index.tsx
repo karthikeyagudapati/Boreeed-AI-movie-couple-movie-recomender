@@ -1,5 +1,7 @@
+
 import React, { useState } from 'react';
-import NetflixRecommender from "@/components/NetflixRecommender";
+import OTTSelector from "@/components/OTTSelector";
+import EnhancedNetflixRecommender from "@/components/EnhancedNetflixRecommender";
 import RecommendationVisualizations from "@/components/RecommendationVisualizations";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -9,6 +11,21 @@ import { Github, FileText, Play, Moon, Sun, Phone, ExternalLink, Linkedin } from
 
 const Index = () => {
   const [isDarkTheme, setIsDarkTheme] = useState<boolean>(true);
+  const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [showRecommender, setShowRecommender] = useState<boolean>(false);
+
+  const handlePlatformSelect = (platform: string, country: string) => {
+    setSelectedPlatform(platform);
+    setSelectedCountry(country);
+    setShowRecommender(true);
+  };
+
+  const handleBackToSelection = () => {
+    setShowRecommender(false);
+    setSelectedPlatform(null);
+    setSelectedCountry(null);
+  };
 
   const themeClasses = isDarkTheme 
     ? "bg-black text-white" 
@@ -24,20 +41,32 @@ const Index = () => {
 
   const buttonVariant = isDarkTheme ? "ghost" : "outline";
 
+  // If a platform is selected and we're showing the recommender
+  if (showRecommender && selectedPlatform && selectedCountry) {
+    return (
+      <EnhancedNetflixRecommender 
+        platform={selectedPlatform}
+        country={selectedCountry}
+        onBack={handleBackToSelection}
+      />
+    );
+  }
+
+  // Show the main landing page with OTT selector
   return (
     <div className={`min-h-screen ${themeClasses}`}>
-      {/* Netflix Navigation */}
+      {/* Navigation */}
       <nav className={`${navClasses} backdrop-blur-md border-b`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-8">
               <div className="flex items-center space-x-3">
-                <div className="text-red-600 text-3xl font-black tracking-tight">NETFLIX</div>
+                <div className="text-red-600 text-3xl font-black tracking-tight">STREAMSENSE</div>
               </div>
               <div className="hidden md:flex space-x-6">
                 <span className={`hover:text-gray-300 cursor-pointer ${isDarkTheme ? "text-white" : "text-gray-900"}`}>Home</span>
-                <span className={`hover:text-gray-300 cursor-pointer ${isDarkTheme ? "text-white" : "text-gray-900"}`}>TV Shows</span>
-                <span className={`hover:text-gray-300 cursor-pointer ${isDarkTheme ? "text-white" : "text-gray-900"}`}>Movies</span>
+                <span className={`hover:text-gray-300 cursor-pointer ${isDarkTheme ? "text-white" : "text-gray-900"}`}>Platforms</span>
+                <span className={`hover:text-gray-300 cursor-pointer ${isDarkTheme ? "text-white" : "text-gray-900"}`}>Features</span>
                 <span className="text-red-500 font-medium cursor-pointer">AI Recommender</span>
               </div>
             </div>
@@ -72,51 +101,8 @@ const Index = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <div className="relative py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-12 text-center">
-            <h1 className={`text-5xl md:text-7xl font-black mb-6 leading-tight ${isDarkTheme ? "text-white" : "text-gray-900"}`}>
-              Find Your Perfect
-              <span className="text-red-600"> Movie </span>
-              Match
-            </h1>
-            <p className={`text-xl mb-8 max-w-3xl mx-auto font-light ${isDarkTheme ? "text-gray-300" : "text-gray-600"}`}>
-              Our AI combines two users' preferences to recommend movies you'll both love. 
-              No more endless scrolling or settling for compromise.
-            </p>
-            <div className="flex items-center justify-center gap-4">
-              <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 text-lg font-semibold">
-                <Play className="w-5 h-5 mr-2" />
-                Get Started
-              </Button>
-              <Button 
-                variant="outline" 
-                className={`px-8 py-3 text-lg font-semibold border-2 ${
-                  isDarkTheme 
-                    ? "border-white text-white hover:bg-white hover:text-black bg-transparent" 
-                    : "border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white bg-transparent"
-                }`}
-              >
-                Learn More
-              </Button>
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <Card className={`${cardClasses} backdrop-blur-md rounded-lg shadow-2xl`}>
-            <CardContent className="p-8">
-              <div className="mb-8">
-                <NetflixRecommender />
-              </div>
-              <Separator className={`my-12 ${isDarkTheme ? "bg-gray-700" : "bg-gray-300"}`} />
-              <div className={`p-8 rounded-xl ${isDarkTheme ? "bg-gray-800/50" : "bg-gray-100/50"}`}>
-                <RecommendationVisualizations />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      {/* Main Content - OTT Selector */}
+      <OTTSelector onPlatformSelect={handlePlatformSelect} />
 
       {/* Features Section */}
       <div className={`py-20 px-4 ${isDarkTheme ? "bg-gray-900/30" : "bg-gray-100/50"}`}>
@@ -144,6 +130,19 @@ const Index = () => {
               <p className={isDarkTheme ? "text-gray-400" : "text-gray-600"}>Powered by real user behavior and preferences</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Visualizations Section */}
+      <div className={`py-16 px-4 ${isDarkTheme ? "bg-gray-800/30" : "bg-gray-50"}`}>
+        <div className="max-w-7xl mx-auto">
+          <Card className={`${cardClasses} backdrop-blur-md rounded-lg shadow-2xl`}>
+            <CardContent className="p-8">
+              <div className={`p-8 rounded-xl ${isDarkTheme ? "bg-gray-800/50" : "bg-gray-100/50"}`}>
+                <RecommendationVisualizations />
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
@@ -182,7 +181,7 @@ const Index = () => {
                         ? "border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white bg-transparent" 
                         : "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white bg-transparent"
                     }`}
-                    onClick={() => window.open('https://www.linkedin.com/in/karthikeya-gudapati-6a5b52266', '_blank')}
+                    onClick={() => window.open('https://www.linkedin.com/in/karthikeya-gudapati-6a5b52266?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app', '_blank')}
                   >
                     <Linkedin className="w-4 h-4" />
                     LinkedIn Profile
@@ -216,14 +215,14 @@ const Index = () => {
       <footer className={`py-12 px-4 border-t ${isDarkTheme ? "bg-black border-gray-800" : "bg-white border-gray-200"}`}>
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <span className="text-red-600 text-2xl font-black">NETFLIX</span>
+            <span className="text-red-600 text-2xl font-black">STREAMSENSE</span>
             <span className={`text-xl font-light ${isDarkTheme ? "text-white" : "text-gray-900"}`}>AI Recommender</span>
           </div>
           <p className={`text-sm ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>
-            Built with passion for data science and machine learning • Not affiliated with Netflix, Inc.
+            Built with passion for data science and machine learning • Universal OTT Recommendation Platform
           </p>
           <div className={`mt-4 text-xs ${isDarkTheme ? "text-gray-500" : "text-gray-500"}`}>
-            This is a portfolio project demonstrating joint recommendation systems
+            This is a portfolio project demonstrating joint recommendation systems across multiple streaming platforms
           </div>
           <div className={`mt-2 text-xs font-medium ${isDarkTheme ? "text-gray-400" : "text-gray-600"}`}>
             © 2024 Karthikeya Gudapati - All rights reserved
