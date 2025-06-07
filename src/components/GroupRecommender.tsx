@@ -43,6 +43,56 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
     'Hulu', 'HBO Max', 'Apple TV+', 'Paramount+', 'Peacock'
   ];
 
+  // Platform theme colors
+  const getThemeColors = () => {
+    switch (platform) {
+      case 'netflix':
+        return {
+          primary: 'bg-red-600',
+          secondary: 'bg-red-700',
+          accent: 'border-red-500',
+          text: 'text-red-400'
+        };
+      case 'amazon-prime':
+        return {
+          primary: 'bg-blue-600',
+          secondary: 'bg-blue-700',
+          accent: 'border-blue-500',
+          text: 'text-blue-400'
+        };
+      case 'disney-hotstar':
+        return {
+          primary: 'bg-blue-500',
+          secondary: 'bg-blue-600',
+          accent: 'border-blue-400',
+          text: 'text-blue-300'
+        };
+      case 'zee5':
+        return {
+          primary: 'bg-purple-600',
+          secondary: 'bg-purple-700',
+          accent: 'border-purple-500',
+          text: 'text-purple-400'
+        };
+      case 'voot':
+        return {
+          primary: 'bg-orange-500',
+          secondary: 'bg-orange-600',
+          accent: 'border-orange-400',
+          text: 'text-orange-400'
+        };
+      default:
+        return {
+          primary: 'bg-red-600',
+          secondary: 'bg-red-700',
+          accent: 'border-red-500',
+          text: 'text-red-400'
+        };
+    }
+  };
+
+  const theme = getThemeColors();
+
   const addUser = () => {
     const newUser: User = {
       id: Date.now().toString(),
@@ -82,7 +132,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
         {
           id: 1,
           title: 'Stranger Things',
-          description: 'When a young boy disappears, his mother, a police chief and his friends must confront terrifying supernatural forces.',
+          description: 'When a young boy disappears, his mother, a police chief and his friends must confront terrifying supernatural forces in order to get him back.',
           genres: ['Sci-Fi', 'Horror', 'Drama'],
           year: 2016,
           rating: 4.6,
@@ -104,7 +154,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
         {
           id: 3,
           title: 'Money Heist',
-          description: 'An unusual group of robbers attempt to carry out the most perfect robbery in Spanish history.',
+          description: 'An unusual group of robbers attempt to carry out the most perfect robbery in Spanish history - stealing 2.4 billion euros from the Royal Mint.',
           genres: ['Crime', 'Drama', 'Thriller'],
           year: 2017,
           rating: 4.3,
@@ -126,13 +176,68 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
         {
           id: 5,
           title: 'The Witcher',
-          description: 'Geralt of Rivia, a mutated monster-hunter for hire, journeys toward his destiny in a turbulent world.',
+          description: 'Geralt of Rivia, a mutated monster-hunter for hire, journeys toward his destiny in a turbulent world where people often prove more wicked than beasts.',
           genres: ['Fantasy', 'Action', 'Adventure'],
           year: 2019,
           rating: 4.2,
           matchPercentage: 86,
           availableOn: ['Netflix'],
           commonInterest: 80
+        },
+        {
+          id: 6,
+          title: 'Wednesday',
+          description: 'Smart, sarcastic and a little dead inside, Wednesday Addams investigates a murder spree while making new friends at Nevermore Academy.',
+          genres: ['Comedy', 'Horror', 'Mystery'],
+          year: 2022,
+          rating: 4.3,
+          matchPercentage: 88,
+          availableOn: ['Netflix'],
+          commonInterest: 84
+        },
+        {
+          id: 7,
+          title: 'Squid Game',
+          description: 'Hundreds of cash-strapped players accept a strange invitation to compete in children\'s games for a tempting prize.',
+          genres: ['Thriller', 'Drama', 'Action'],
+          year: 2021,
+          rating: 4.5,
+          matchPercentage: 91,
+          availableOn: ['Netflix'],
+          commonInterest: 88
+        },
+        {
+          id: 8,
+          title: 'Dark',
+          description: 'A family saga with a supernatural twist, set in a German town where the disappearance of two young children exposes the relationships among four families.',
+          genres: ['Sci-Fi', 'Drama', 'Mystery'],
+          year: 2017,
+          rating: 4.7,
+          matchPercentage: 93,
+          availableOn: ['Netflix'],
+          commonInterest: 90
+        },
+        {
+          id: 9,
+          title: 'Ozark',
+          description: 'A financial advisor drags his family from Chicago to the Missouri Ozarks, where he must launder money to appease a drug boss.',
+          genres: ['Crime', 'Drama', 'Thriller'],
+          year: 2017,
+          rating: 4.4,
+          matchPercentage: 85,
+          availableOn: ['Netflix'],
+          commonInterest: 79
+        },
+        {
+          id: 10,
+          title: 'Emily in Paris',
+          description: 'A young American woman from the Midwest is hired by a marketing firm in Paris to provide them with an American perspective on things.',
+          genres: ['Comedy', 'Drama', 'Romance'],
+          year: 2020,
+          rating: 3.9,
+          matchPercentage: 76,
+          availableOn: ['Netflix'],
+          commonInterest: 68
         }
       ];
       
@@ -142,8 +247,8 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-red-900 text-white">
-      {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white">
+      {/* Header with Theme Colors */}
       <div className="bg-black/50 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -156,10 +261,10 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
               Back to Platform Selection
             </Button>
             <div className="flex items-center gap-4">
-              <Badge className="bg-red-600 text-white font-semibold px-4 py-2">
+              <Badge className={`${theme.primary} text-white font-semibold px-4 py-2`}>
                 {platform.charAt(0).toUpperCase() + platform.slice(1).replace('-', ' ')}
               </Badge>
-              <Badge variant="outline" className="border-gray-600 text-gray-300">
+              <Badge variant="outline" className="border-gray-400 text-gray-200 bg-gray-800/50">
                 {country}
               </Badge>
             </div>
@@ -169,26 +274,26 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
 
       <div className="max-w-6xl mx-auto p-6">
         {/* Group Setup */}
-        <Card className="mb-8 bg-gray-800/50 border-gray-700 shadow-2xl">
+        <Card className="mb-8 bg-gray-800/70 border-gray-600 shadow-2xl backdrop-blur-md">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 mb-6">
-              <Users className="h-8 w-8 text-blue-400" />
-              <h2 className="text-2xl font-bold">Set Up Your Group</h2>
+              <Users className={`h-8 w-8 ${theme.text}`} />
+              <h2 className="text-2xl font-bold text-white">Set Up Your Group</h2>
             </div>
 
             <ScrollArea className="h-96 w-full">
               <div className="space-y-4">
                 {users.map((user, index) => (
-                  <Card key={user.id} className="bg-gray-700/50 border-gray-600">
+                  <Card key={user.id} className="bg-gray-700/70 border-gray-500 backdrop-blur-sm">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-4">
-                        <h3 className="text-lg font-semibold">User {index + 1}</h3>
+                        <h3 className="text-lg font-semibold text-white">User {index + 1}</h3>
                         {users.length > 1 && (
                           <Button
                             onClick={() => removeUser(user.id)}
                             variant="ghost"
                             size="sm"
-                            className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                            className="text-red-300 hover:text-red-200 hover:bg-red-900/30"
                           >
                             <X className="h-4 w-4" />
                           </Button>
@@ -197,17 +302,17 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium mb-2">Name</label>
+                          <label className="block text-sm font-medium mb-2 text-gray-200">Name</label>
                           <Input
                             placeholder="Enter name"
                             value={user.name}
                             onChange={(e) => updateUser(user.id, 'name', e.target.value)}
-                            className="bg-gray-600 border-gray-500 text-white"
+                            className="bg-gray-600/70 border-gray-500 text-white placeholder:text-gray-400"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium mb-2">OTT Subscriptions</label>
+                          <label className="block text-sm font-medium mb-2 text-gray-200">OTT Subscriptions</label>
                           <div className="grid grid-cols-2 gap-2">
                             {availablePlatforms.slice(0, 4).map((platform) => (
                               <div key={platform} className="flex items-center space-x-2">
@@ -221,7 +326,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
                                     updateUser(user.id, 'platforms', newPlatforms);
                                   }}
                                 />
-                                <label htmlFor={`${user.id}-${platform}`} className="text-xs cursor-pointer">
+                                <label htmlFor={`${user.id}-${platform}`} className="text-xs cursor-pointer text-gray-200">
                                   {platform}
                                 </label>
                               </div>
@@ -232,7 +337,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
 
                       {/* File Upload */}
                       <div className="mt-4">
-                        <label className="block text-sm font-medium mb-2">Upload Viewing History (Optional)</label>
+                        <label className="block text-sm font-medium mb-2 text-gray-200">Upload Viewing History (Optional)</label>
                         <input
                           type="file"
                           accept=".csv,.xlsx,.xls"
@@ -244,7 +349,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
                           id={`file-${user.id}`}
                         />
                         <label htmlFor={`file-${user.id}`}>
-                          <Button variant="outline" className="w-full border-gray-600 text-gray-300 hover:bg-gray-700" asChild>
+                          <Button variant="outline" className="w-full border-gray-500 text-gray-200 hover:bg-gray-600 bg-gray-700/50" asChild>
                             <span>
                               <Upload className="h-4 w-4 mr-2" />
                               {user.viewingHistory ? user.viewingHistory.name : 'Choose CSV/Excel file'}
@@ -261,7 +366,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
             <Button
               onClick={addUser}
               variant="outline"
-              className="mt-4 border-blue-500 text-blue-400 hover:bg-blue-900/20"
+              className={`mt-4 ${theme.accent} ${theme.text} hover:bg-gray-700/50 bg-gray-800/50`}
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Another Friend
@@ -270,9 +375,9 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
         </Card>
 
         {/* Genre Selection */}
-        <Card className="mb-8 bg-gray-800/50 border-gray-700 shadow-2xl">
+        <Card className="mb-8 bg-gray-800/70 border-gray-600 shadow-2xl backdrop-blur-md">
           <CardContent className="pt-6">
-            <h3 className="text-xl font-bold mb-4">Select Preferred Genres</h3>
+            <h3 className="text-xl font-bold mb-4 text-white">Select Preferred Genres</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
               {availableGenres.map((genre) => (
                 <div key={genre} className="flex items-center space-x-2">
@@ -287,7 +392,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
                       }
                     }}
                   />
-                  <label htmlFor={genre} className="text-sm cursor-pointer">
+                  <label htmlFor={genre} className="text-sm cursor-pointer text-gray-200">
                     {genre}
                   </label>
                 </div>
@@ -300,7 +405,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
         <Button
           onClick={generateRecommendations}
           disabled={isLoading || users.some(user => !user.name)}
-          className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-4 mb-8"
+          className={`w-full ${theme.primary} hover:${theme.secondary} text-white font-semibold py-4 mb-8`}
         >
           {isLoading ? 'Finding Perfect Matches for Your Group...' : 'Get Group Recommendations'}
         </Button>
@@ -308,29 +413,29 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
         {/* Recommendations */}
         {recommendations.length > 0 && (
           <div>
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-              <Play className="h-6 w-6 text-red-500" />
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-white">
+              <Play className={`h-6 w-6 ${theme.text}`} />
               Perfect for Your Group ({recommendations.length} recommendations)
             </h2>
 
             <div className="space-y-4">
               {recommendations.map((movie) => (
-                <Card key={movie.id} className="bg-gray-800/50 border-gray-700 hover:shadow-xl transition-shadow">
+                <Card key={movie.id} className="bg-gray-800/70 border-gray-600 hover:shadow-xl transition-shadow backdrop-blur-sm">
                   <CardContent className="p-6">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <h3 className="text-xl font-bold text-white mb-2">{movie.title}</h3>
-                        <p className="text-gray-300 text-sm mb-3 leading-relaxed">{movie.description}</p>
+                        <p className="text-gray-200 text-sm mb-3 leading-relaxed">{movie.description}</p>
                         
                         <div className="flex flex-wrap gap-2 mb-3">
                           {movie.genres.map((genre: string, index: number) => (
-                            <Badge key={index} variant="secondary" className="bg-gray-700 text-gray-300 text-xs">
+                            <Badge key={index} variant="secondary" className="bg-gray-600 text-gray-200 text-xs border-0">
                               {genre}
                             </Badge>
                           ))}
                         </div>
 
-                        <div className="flex items-center gap-4 text-sm text-gray-400">
+                        <div className="flex items-center gap-4 text-sm text-gray-300">
                           <span>Year: {movie.year}</span>
                           <span className="flex items-center gap-1">
                             <Star className="h-4 w-4 text-yellow-400" />
@@ -342,17 +447,17 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
                       <div className="flex flex-col items-end gap-3 ml-4">
                         <div className="text-center">
                           <div className="text-2xl font-bold text-green-400">{movie.matchPercentage}%</div>
-                          <div className="text-xs text-gray-400">Group Match</div>
+                          <div className="text-xs text-gray-300">Group Match</div>
                         </div>
                         
                         <div className="text-center">
                           <div className="text-lg font-bold text-blue-400">{movie.commonInterest}%</div>
-                          <div className="text-xs text-gray-400">Common Interest</div>
+                          <div className="text-xs text-gray-300">Common Interest</div>
                         </div>
 
                         <div className="flex flex-wrap gap-1">
                           {movie.availableOn.map((platform: string) => (
-                            <Badge key={platform} className="bg-red-600 text-white text-xs">
+                            <Badge key={platform} className={`${theme.primary} text-white text-xs border-0`}>
                               {platform}
                             </Badge>
                           ))}
