@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Play, Globe, Tv, Film } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Play, Globe, Tv, Film, Search } from "lucide-react";
 
 interface OTTPlatform {
   id: string;
@@ -22,6 +23,7 @@ interface OTTSelectorProps {
 const OTTSelector: React.FC<OTTSelectorProps> = ({ onPlatformSelect }) => {
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [selectedPlatform, setSelectedPlatform] = useState<string>('');
+  const [countrySearch, setCountrySearch] = useState<string>('');
 
   const ottPlatforms: OTTPlatform[] = [
     {
@@ -30,7 +32,7 @@ const OTTSelector: React.FC<OTTSelectorProps> = ({ onPlatformSelect }) => {
       color: 'bg-red-600',
       logo: '🎬',
       description: 'Global streaming giant with diverse content',
-      availableCountries: ['United States', 'India', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Japan', 'Brazil']
+      availableCountries: ['United States', 'India', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Japan', 'Brazil', 'South Korea', 'Mexico', 'Spain', 'Italy', 'Netherlands']
     },
     {
       id: 'amazon-prime',
@@ -38,7 +40,7 @@ const OTTSelector: React.FC<OTTSelectorProps> = ({ onPlatformSelect }) => {
       color: 'bg-blue-600',
       logo: '📺',
       description: 'Amazon\'s premium streaming service',
-      availableCountries: ['United States', 'India', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Japan']
+      availableCountries: ['United States', 'India', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Japan', 'Brazil', 'Mexico', 'Spain', 'Italy']
     },
     {
       id: 'disney-hotstar',
@@ -46,7 +48,7 @@ const OTTSelector: React.FC<OTTSelectorProps> = ({ onPlatformSelect }) => {
       color: 'bg-blue-500',
       logo: '🏰',
       description: 'Disney content plus Indian entertainment',
-      availableCountries: ['India', 'Indonesia', 'Malaysia', 'Thailand', 'Singapore']
+      availableCountries: ['India', 'Indonesia', 'Malaysia', 'Thailand', 'Singapore', 'Philippines']
     },
     {
       id: 'zee5',
@@ -54,7 +56,7 @@ const OTTSelector: React.FC<OTTSelectorProps> = ({ onPlatformSelect }) => {
       color: 'bg-purple-600',
       logo: '🎭',
       description: 'Indian entertainment platform',
-      availableCountries: ['India', 'United States', 'United Kingdom', 'Canada', 'Australia']
+      availableCountries: ['India', 'United States', 'United Kingdom', 'Canada', 'Australia', 'United Arab Emirates', 'Singapore']
     },
     {
       id: 'voot',
@@ -62,7 +64,7 @@ const OTTSelector: React.FC<OTTSelectorProps> = ({ onPlatformSelect }) => {
       color: 'bg-orange-500',
       logo: '📱',
       description: 'Viacom18\'s digital platform',
-      availableCountries: ['India', 'United Kingdom', 'United States']
+      availableCountries: ['India', 'United Kingdom', 'United States', 'Canada', 'Australia']
     },
     {
       id: 'hulu',
@@ -78,7 +80,7 @@ const OTTSelector: React.FC<OTTSelectorProps> = ({ onPlatformSelect }) => {
       color: 'bg-purple-700',
       logo: '👑',
       description: 'Premium HBO content and more',
-      availableCountries: ['United States', 'Latin America']
+      availableCountries: ['United States', 'Latin America', 'Europe']
     },
     {
       id: 'apple-tv',
@@ -86,15 +88,37 @@ const OTTSelector: React.FC<OTTSelectorProps> = ({ onPlatformSelect }) => {
       color: 'bg-gray-800',
       logo: '🍎',
       description: 'Apple\'s original content platform',
-      availableCountries: ['United States', 'India', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Japan']
+      availableCountries: ['United States', 'India', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Japan', 'Brazil', 'Mexico']
+    },
+    {
+      id: 'paramount-plus',
+      name: 'Paramount+',
+      color: 'bg-blue-700',
+      logo: '⭐',
+      description: 'CBS and Paramount content',
+      availableCountries: ['United States', 'Canada', 'Australia', 'United Kingdom', 'Ireland']
+    },
+    {
+      id: 'peacock',
+      name: 'Peacock',
+      color: 'bg-indigo-600',
+      logo: '🦚',
+      description: 'NBCUniversal\'s streaming service',
+      availableCountries: ['United States', 'United Kingdom', 'Ireland', 'Germany']
     }
   ];
 
   const countries = [
     'United States', 'India', 'United Kingdom', 'Canada', 'Australia', 
     'Germany', 'France', 'Japan', 'Brazil', 'Indonesia', 'Malaysia', 
-    'Thailand', 'Singapore', 'Latin America'
+    'Thailand', 'Singapore', 'Latin America', 'South Korea', 'Mexico',
+    'Spain', 'Italy', 'Netherlands', 'Philippines', 'United Arab Emirates',
+    'Ireland', 'Europe'
   ];
+
+  const filteredCountries = countries.filter(country =>
+    country.toLowerCase().includes(countrySearch.toLowerCase())
+  );
 
   const getAvailablePlatforms = () => {
     if (!selectedCountry) return ottPlatforms;
@@ -122,15 +146,15 @@ const OTTSelector: React.FC<OTTSelectorProps> = ({ onPlatformSelect }) => {
               StreamSense AI
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-              Your Universal OTT Recommendation Engine
+              Universal Group Recommendation Engine for All OTT Platforms
             </p>
             <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-              Get personalized movie and show recommendations across all major streaming platforms. 
-              Select your country and preferred OTT service to discover content you'll love.
+              Perfect for group movie nights! Get recommendations that work for everyone, 
+              regardless of which streaming services each person has.
             </p>
           </div>
 
-          {/* Country Selection */}
+          {/* Country Selection with Search */}
           <div className="mb-12">
             <Card className="bg-gray-800/50 border-gray-700 max-w-md mx-auto">
               <CardContent className="pt-6">
@@ -138,22 +162,35 @@ const OTTSelector: React.FC<OTTSelectorProps> = ({ onPlatformSelect }) => {
                   <Globe className="h-6 w-6 text-blue-400" />
                   <h3 className="text-lg font-semibold">Select Your Country</h3>
                 </div>
-                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                  <SelectTrigger className="h-12 bg-gray-700 border-gray-600 text-white">
-                    <SelectValue placeholder="Choose your country" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-600">
-                    {countries.map(country => (
-                      <SelectItem 
-                        key={country} 
-                        value={country}
-                        className="text-white hover:bg-gray-700"
-                      >
-                        {country}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                
+                <div className="space-y-3">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Search countries..."
+                      value={countrySearch}
+                      onChange={(e) => setCountrySearch(e.target.value)}
+                      className="pl-10 bg-gray-700 border-gray-600 text-white"
+                    />
+                  </div>
+                  
+                  <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                    <SelectTrigger className="h-12 bg-gray-700 border-gray-600 text-white">
+                      <SelectValue placeholder="Choose your country" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-gray-600 max-h-60">
+                      {filteredCountries.map(country => (
+                        <SelectItem 
+                          key={country} 
+                          value={country}
+                          className="text-white hover:bg-gray-700"
+                        >
+                          {country}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -169,7 +206,7 @@ const OTTSelector: React.FC<OTTSelectorProps> = ({ onPlatformSelect }) => {
               <p className="text-yellow-400 mb-6">⚠️ Please select a country to see available platforms</p>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-7xl mx-auto">
               {getAvailablePlatforms().map((platform) => (
                 <Card 
                   key={platform.id} 
@@ -220,7 +257,7 @@ const OTTSelector: React.FC<OTTSelectorProps> = ({ onPlatformSelect }) => {
                       onClick={() => onPlatformSelect(selectedPlatform, selectedCountry)}
                     >
                       <Play className="h-4 w-4 mr-2" />
-                      Start Recommendations
+                      Start Group Recommendations
                     </Button>
                   </div>
                 </CardContent>
@@ -233,28 +270,28 @@ const OTTSelector: React.FC<OTTSelectorProps> = ({ onPlatformSelect }) => {
       {/* Features Preview */}
       <div className="py-16 px-4 bg-gray-900/50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Why Choose StreamSense AI?</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Perfect for Group Movie Nights!</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Globe className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Global Coverage</h3>
-              <p className="text-gray-400">Support for 8+ major streaming platforms across multiple countries</p>
+              <h3 className="text-xl font-bold mb-2">Multi-User Support</h3>
+              <p className="text-gray-400">Add unlimited friends with different OTT subscriptions</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Film className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Smart Recommendations</h3>
-              <p className="text-gray-400">AI-powered suggestions based on your viewing history and preferences</p>
+              <h3 className="text-xl font-bold mb-2">Cross-Platform Recommendations</h3>
+              <p className="text-gray-400">Find content available on platforms your group actually has</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Tv className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Multi-Platform</h3>
-              <p className="text-gray-400">Discover content across all your subscribed streaming services</p>
+              <h3 className="text-xl font-bold mb-2">10+ Platforms Supported</h3>
+              <p className="text-gray-400">Netflix, Prime Video, Disney+, Hulu, HBO Max, and more</p>
             </div>
           </div>
         </div>

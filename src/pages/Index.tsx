@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import OTTSelector from "@/components/OTTSelector";
-import EnhancedNetflixRecommender from "@/components/EnhancedNetflixRecommender";
+import GroupRecommender from "@/components/GroupRecommender";
 import RecommendationVisualizations from "@/components/RecommendationVisualizations";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -44,7 +43,7 @@ const Index = () => {
   // If a platform is selected and we're showing the recommender
   if (showRecommender && selectedPlatform && selectedCountry) {
     return (
-      <EnhancedNetflixRecommender 
+      <GroupRecommender 
         platform={selectedPlatform}
         country={selectedCountry}
         onBack={handleBackToSelection}
