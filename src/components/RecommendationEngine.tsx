@@ -1,3 +1,4 @@
+
 import { Movie } from '@/types/groupRecommender';
 import { movieDatabase } from '@/utils/movieDatabase';
 
@@ -85,23 +86,27 @@ export const getMoviesByGenre = (
     }
   }
 
-  // Filter by match percentage
+  // Show ALL movies with match percentage >= 49% (not limiting to top movies)
   filteredMovies = filteredMovies.filter(movie => 
     movie.matchPercentage >= 49 && !watchedMovies.has(movie.id)
   );
 
-  // Group by primary genre
+  // Group by primary genre and show ALL matching movies
   filteredMovies.forEach(movie => {
     const primaryGenre = movie.genres[0];
     if (!moviesByGenre[primaryGenre]) {
       moviesByGenre[primaryGenre] = [];
     }
-    if (moviesByGenre[primaryGenre].length < 8) { // Increased from 5 to 8 for more options
-      moviesByGenre[primaryGenre].push({
-        ...movie,
-        matchPercentage: Math.max(49, Math.min(98, movie.matchPercentage + Math.floor(Math.random() * 10) - 5))
-      });
-    }
+    // Remove the limit, show all movies above 49%
+    moviesByGenre[primaryGenre].push({
+      ...movie,
+      matchPercentage: Math.max(49, Math.min(98, movie.matchPercentage + Math.floor(Math.random() * 10) - 5))
+    });
+  });
+
+  // Sort movies within each genre by match percentage
+  Object.keys(moviesByGenre).forEach(genre => {
+    moviesByGenre[genre].sort((a, b) => b.matchPercentage - a.matchPercentage);
   });
 
   return moviesByGenre;

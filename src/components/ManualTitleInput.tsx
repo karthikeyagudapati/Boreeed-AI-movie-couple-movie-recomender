@@ -7,16 +7,16 @@ import { Plus, X } from "lucide-react";
 
 interface ManualTitleInputProps {
   userId: string;
-  manualTitles: string[];
+  titles: string[];
   inputValue: string;
-  onInputChange: (value: string) => void;
-  onAddTitle: () => void;
-  onRemoveTitle: (titleIndex: number) => void;
+  onInputChange: (userId: string, value: string) => void;
+  onAddTitle: (userId: string) => void;
+  onRemoveTitle: (userId: string, titleIndex: number) => void;
 }
 
 const ManualTitleInput: React.FC<ManualTitleInputProps> = ({
   userId,
-  manualTitles,
+  titles,
   inputValue,
   onInputChange,
   onAddTitle,
@@ -24,44 +24,47 @@ const ManualTitleInput: React.FC<ManualTitleInputProps> = ({
 }) => {
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      onAddTitle();
+      onAddTitle(userId);
     }
   };
 
   return (
-    <div className="mt-4">
-      <label className="block text-sm font-medium mb-2 text-gray-200">
-        Or manually enter movie/show titles you've watched:
+    <div className="space-y-3">
+      <label className="block text-sm font-medium text-gray-200">
+        Manually Add Favorite Movies/Shows
       </label>
+      
       <div className="flex gap-2">
         <Input
-          placeholder="Enter movie/show title"
+          type="text"
+          placeholder="Enter movie or show title..."
           value={inputValue}
-          onChange={(e) => onInputChange(e.target.value)}
-          className="bg-gray-600/70 border-gray-500 text-white placeholder:text-gray-400"
+          onChange={(e) => onInputChange(userId, e.target.value)}
           onKeyPress={handleKeyPress}
+          className="flex-1 bg-gray-700/50 border-gray-600 text-gray-200 placeholder-gray-400"
         />
         <Button
-          onClick={onAddTitle}
-          variant="outline"
-          size="sm"
-          className="border-gray-500 text-gray-200 hover:bg-gray-600"
+          onClick={() => onAddTitle(userId)}
+          disabled={!inputValue.trim()}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
         >
           <Plus className="h-4 w-4" />
         </Button>
       </div>
-      
-      {manualTitles.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-2">
-          {manualTitles.map((title, titleIndex) => (
-            <Badge key={titleIndex} variant="secondary" className="bg-gray-600 text-gray-200 text-xs">
-              {title}
-              <button
-                onClick={() => onRemoveTitle(titleIndex)}
-                className="ml-2 text-red-400 hover:text-red-300"
-              >
-                <X className="h-3 w-3" />
-              </button>
+
+      {titles && titles.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-3">
+          {titles.map((title, index) => (
+            <Badge
+              key={index}
+              variant="secondary"
+              className="bg-blue-600/20 text-blue-200 border border-blue-500/30 px-3 py-1 flex items-center gap-2 hover:bg-blue-600/30 transition-colors"
+            >
+              <span className="text-xs">{title}</span>
+              <X
+                className="h-3 w-3 cursor-pointer hover:text-red-400 transition-colors"
+                onClick={() => onRemoveTitle(userId, index)}
+              />
             </Badge>
           ))}
         </div>

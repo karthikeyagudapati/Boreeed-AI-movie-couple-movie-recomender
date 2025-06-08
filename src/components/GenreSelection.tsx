@@ -38,7 +38,11 @@ const GenreSelection: React.FC<GenreSelectionProps> = ({ selectedGenres, onGenre
             onClick={handleSelectAll}
             variant="outline"
             size="sm"
-            className="border-gray-500 text-gray-200 hover:bg-gray-600"
+            className={`border-2 font-semibold transition-all ${
+              isAllSelected 
+                ? 'border-red-500 bg-red-600 text-white hover:bg-red-700' 
+                : 'border-blue-500 bg-blue-600 text-white hover:bg-blue-700'
+            }`}
           >
             {isAllSelected ? 'Deselect All' : 'Select All'}
           </Button>
@@ -47,19 +51,30 @@ const GenreSelection: React.FC<GenreSelectionProps> = ({ selectedGenres, onGenre
           Leave unselected to see recommendations organized by genre categories
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-          {availableGenres.map((genre) => (
-            <div key={genre} className="flex items-center space-x-2 bg-gray-700/50 p-3 rounded-lg border border-gray-600">
-              <Checkbox
-                id={genre}
-                checked={selectedGenres.includes(genre)}
-                onCheckedChange={(checked) => handleGenreToggle(genre, checked as boolean)}
-                className="border-gray-400 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-              />
-              <label htmlFor={genre} className="text-sm cursor-pointer text-gray-200 font-medium">
-                {genre}
-              </label>
-            </div>
-          ))}
+          {availableGenres.map((genre) => {
+            const isSelected = selectedGenres.includes(genre);
+            return (
+              <div 
+                key={genre} 
+                className={`flex items-center space-x-2 p-3 rounded-lg border transition-all cursor-pointer hover:scale-105 ${
+                  isSelected 
+                    ? 'bg-blue-600/30 border-blue-400 shadow-md shadow-blue-500/20' 
+                    : 'bg-gray-700/50 border-gray-600 hover:bg-gray-600/50'
+                }`}
+                onClick={() => handleGenreToggle(genre, !isSelected)}
+              >
+                <Checkbox
+                  id={genre}
+                  checked={isSelected}
+                  onCheckedChange={(checked) => handleGenreToggle(genre, checked as boolean)}
+                  className="border-gray-400 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                />
+                <label htmlFor={genre} className="text-sm cursor-pointer text-gray-200 font-medium">
+                  {genre}
+                </label>
+              </div>
+            );
+          })}
         </div>
       </CardContent>
     </Card>

@@ -3,13 +3,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ArrowLeft, Play, RefreshCw, Brain, Zap } from "lucide-react";
+import { ArrowLeft, Play, RefreshCw, Brain, Zap, BarChart } from "lucide-react";
 import { User, Movie, GroupRecommenderProps } from '@/types/groupRecommender';
 import { getThemeColors } from '@/utils/platformTheme';
 import { generateMovieRecommendations, getMoviesByGenre, analyzeViewingHistory } from '@/components/RecommendationEngine';
 import GroupSetup from '@/components/GroupSetup';
 import GenreSelection from '@/components/GenreSelection';
+import PlatformModeSelector from '@/components/PlatformModeSelector';
 import MovieCard from '@/components/MovieCard';
+import RecommendationVisualizations from '@/components/RecommendationVisualizations';
 
 const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, onBack }) => {
   const [users, setUsers] = useState<User[]>([
@@ -20,10 +22,12 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
   const [watchedMovies, setWatchedMovies] = useState<Set<number>>(new Set());
   const [isLoading, setIsLoading] = useState(false);
   const [showAlgorithm, setShowAlgorithm] = useState(false);
+  const [showAnalysis, setShowAnalysis] = useState(false);
   const [manualTitleInput, setManualTitleInput] = useState<{[key: string]: string}>({});
   const [crossPlatformMode, setCrossPlatformMode] = useState(false);
 
   const theme = getThemeColors(platform);
+  const hasViewingHistory = users.some(user => user.viewingHistory);
 
   const addUser = () => {
     const newUser: User = {
@@ -163,6 +167,15 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
                 </Badge>
               )}
               <Button
+                onClick={() => setShowAnalysis(!showAnalysis)}
+                variant="outline"
+                size="sm"
+                className="border-gray-500 text-gray-200 hover:bg-gray-600"
+              >
+                <BarChart className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Analysis</span>
+              </Button>
+              <Button
                 onClick={() => setShowAlgorithm(!showAlgorithm)}
                 variant="outline"
                 size="sm"
@@ -175,6 +188,23 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
           </div>
         </div>
       </div>
+
+      {/* Analysis Section */}
+      {showAnalysis && (
+        <div className="bg-gray-800/90 border-b border-gray-700 px-4 py-6">
+          <div className="max-w-6xl mx-auto">
+            <Card className="bg-gray-700/70 border-gray-500">
+              <CardContent className="p-4 sm:p-6">
+                <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                  <BarChart className="h-5 w-5 text-green-400" />
+                  Recommendation Analysis
+                </h3>
+                <RecommendationVisualizations />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
 
       {/* Algorithm Explanation */}
       {showAlgorithm && (
@@ -194,6 +224,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
                       <li>• Genre preference analysis</li>
                       <li>• Match percentage ≥ 49% threshold</li>
                       <li>• Viewing history integration</li>
+                      <li>• Shows ALL qualifying movies (no artificial limits)</li>
                     </ul>
                   </div>
                   <div>
@@ -203,6 +234,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
                       <li>• Enhanced match scoring (+15% boost)</li>
                       <li>• Multi-platform content discovery</li>
                       <li>• Preference transfer across services</li>
+                      <li>• Smart genre-based categorization</li>
                     </ul>
                   </div>
                 </div>
@@ -228,6 +260,14 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
           onManualTitleInputChange={handleManualTitleInputChange}
         />
 
+        {/* Platform Mode Selector */}
+        <PlatformModeSelector
+          platform={platform}
+          crossPlatformMode={crossPlatformMode}
+          onModeChange={setCrossPlatformMode}
+          hasViewingHistory={hasViewingHistory}
+        />
+
         {/* Genre Selection */}
         <GenreSelection
           selectedGenres={selectedGenres}
@@ -250,12 +290,18 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
             <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-3 text-white">
               <Play className={`h-5 sm:h-6 w-5 sm:w-6 ${theme.text}`} />
               {crossPlatformMode ? 'Cross-Platform Recommendations by Genre' : 'Recommendations by Genre'}
+              <Badge variant="outline" className="text-xs text-gray-300">
+                All Movies Above 49% Match
+              </Badge>
             </h2>
             
             {Object.entries(moviesByGenre).map(([genre, movies]) => (
               <div key={genre} className="space-y-4">
-                <h3 className="text-lg font-bold text-white border-b border-gray-600 pb-2">
-                  {genre} Movies
+                <h3 className="text-lg font-bold text-white border-b border-gray-600 pb-2 flex items-center gap-2">
+                  {genre} Movies 
+                  <Badge variant="secondary" className="text-xs bg-gray-600 text-gray-200">
+                    {movies.length} movies
+                  </Badge>
                 </h3>
                 <ScrollArea className="w-full">
                   <div className="flex space-x-4 pb-4">
