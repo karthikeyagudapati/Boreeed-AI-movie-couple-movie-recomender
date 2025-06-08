@@ -243,7 +243,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
     generateRecommendations(true);
   };
 
-  const generateRecommendations = (getMore = false, count = 10) => {
+  const generateRecommendations = (getMore = false, count = 15) => {
     setIsLoading(true);
     
     setTimeout(() => {
@@ -300,10 +300,10 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
   };
 
   // Group movies by genre for display when no genres are selected
-  const getMoviesByGenre = () => {
+  const getMoviesByGenre = (): { [key: string]: Movie[] } | null => {
     if (selectedGenres.length > 0) return null;
 
-    const moviesByGenre = {};
+    const moviesByGenre: { [key: string]: Movie[] } = {};
     let filteredMovies = [...movieDatabase];
 
     // Filter by platform
@@ -576,7 +576,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
               {availableGenres.map((genre) => (
-                <div key={genre} className="flex items-center space-x-2 bg-gray-700/30 p-2 rounded">
+                <div key={genre} className="flex items-center space-x-2 bg-gray-700/50 p-3 rounded-lg border border-gray-600">
                   <Checkbox
                     id={genre}
                     checked={selectedGenres.includes(genre)}
@@ -587,9 +587,9 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
                         setSelectedGenres(selectedGenres.filter(g => g !== genre));
                       }
                     }}
-                    className="border-gray-400"
+                    className="border-gray-400 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                   />
-                  <label htmlFor={genre} className="text-sm cursor-pointer text-gray-200">
+                  <label htmlFor={genre} className="text-sm cursor-pointer text-gray-200 font-medium">
                     {genre}
                   </label>
                 </div>
