@@ -2,6 +2,7 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import { availableGenres } from '@/utils/movieDatabase';
 
 interface GenreSelectionProps {
@@ -18,10 +19,30 @@ const GenreSelection: React.FC<GenreSelectionProps> = ({ selectedGenres, onGenre
     }
   };
 
+  const handleSelectAll = () => {
+    if (selectedGenres.length === availableGenres.length) {
+      onGenreChange([]);
+    } else {
+      onGenreChange([...availableGenres]);
+    }
+  };
+
+  const isAllSelected = selectedGenres.length === availableGenres.length;
+
   return (
     <Card className="mb-6 sm:mb-8 bg-gray-800/70 border-gray-600 shadow-2xl backdrop-blur-md">
       <CardContent className="pt-6">
-        <h3 className="text-lg sm:text-xl font-bold mb-4 text-white">Select Preferred Genres (Optional)</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg sm:text-xl font-bold text-white">Select Preferred Genres (Optional)</h3>
+          <Button
+            onClick={handleSelectAll}
+            variant="outline"
+            size="sm"
+            className="border-gray-500 text-gray-200 hover:bg-gray-600"
+          >
+            {isAllSelected ? 'Deselect All' : 'Select All'}
+          </Button>
+        </div>
         <p className="text-sm text-gray-300 mb-4">
           Leave unselected to see recommendations organized by genre categories
         </p>

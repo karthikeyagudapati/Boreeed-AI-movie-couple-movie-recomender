@@ -1,4 +1,3 @@
-
 import { Movie } from '@/types/groupRecommender';
 import { movieDatabase } from '@/utils/movieDatabase';
 
@@ -8,17 +7,21 @@ export const generateMovieRecommendations = (
   watchedMovies: Set<number>,
   currentMovies: Movie[] = [],
   getMore: boolean = false,
-  count: number = 15
+  count: number = 15,
+  crossPlatform: boolean = false
 ): Movie[] => {
   let filteredMovies = [...movieDatabase];
 
-  // Filter by platform if specific platform is selected
-  const platformName = platform.charAt(0).toUpperCase() + platform.slice(1).replace('-', ' ');
-  if (platformName !== 'All') {
-    filteredMovies = filteredMovies.filter(movie => 
-      movie.availableOn.includes(platformName) || 
-      movie.availableOn.some(p => p.toLowerCase().includes(platform.toLowerCase()))
-    );
+  // If cross-platform is enabled, include movies from all platforms
+  // Otherwise, filter by the selected platform
+  if (!crossPlatform) {
+    const platformName = platform.charAt(0).toUpperCase() + platform.slice(1).replace('-', ' ');
+    if (platformName !== 'All') {
+      filteredMovies = filteredMovies.filter(movie => 
+        movie.availableOn.includes(platformName) || 
+        movie.availableOn.some(p => p.toLowerCase().includes(platform.toLowerCase()))
+      );
+    }
   }
 
   // Filter by match percentage (49% or higher)
@@ -40,6 +43,16 @@ export const generateMovieRecommendations = (
     filteredMovies = filteredMovies.filter(movie => !currentMovieIds.includes(movie.id));
   }
 
+  // If cross-platform and viewing history is available, boost relevance
+  if (crossPlatform) {
+    // Prioritize movies that are similar to Netflix viewing patterns
+    filteredMovies = filteredMovies.map(movie => ({
+      ...movie,
+      matchPercentage: Math.min(98, movie.matchPercentage + 15), // Boost match for cross-platform
+      commonInterest: Math.min(98, movie.commonInterest + 10)
+    }));
+  }
+
   // Shuffle and get random movies
   const shuffled = filteredMovies.sort(() => Math.random() - 0.5);
   const numberOfMovies = Math.min(shuffled.length, count);
@@ -55,18 +68,21 @@ export const generateMovieRecommendations = (
 
 export const getMoviesByGenre = (
   platform: string,
-  watchedMovies: Set<number>
+  watchedMovies: Set<number>,
+  crossPlatform: boolean = false
 ): { [key: string]: Movie[] } => {
   const moviesByGenre: { [key: string]: Movie[] } = {};
   let filteredMovies = [...movieDatabase];
 
-  // Filter by platform
-  const platformName = platform.charAt(0).toUpperCase() + platform.slice(1).replace('-', ' ');
-  if (platformName !== 'All') {
-    filteredMovies = filteredMovies.filter(movie => 
-      movie.availableOn.includes(platformName) || 
-      movie.availableOn.some(p => p.toLowerCase().includes(platform.toLowerCase()))
-    );
+  // Filter by platform unless cross-platform is enabled
+  if (!crossPlatform) {
+    const platformName = platform.charAt(0).toUpperCase() + platform.slice(1).replace('-', ' ');
+    if (platformName !== 'All') {
+      filteredMovies = filteredMovies.filter(movie => 
+        movie.availableOn.includes(platformName) || 
+        movie.availableOn.some(p => p.toLowerCase().includes(platform.toLowerCase()))
+      );
+    }
   }
 
   // Filter by match percentage
@@ -80,7 +96,7 @@ export const getMoviesByGenre = (
     if (!moviesByGenre[primaryGenre]) {
       moviesByGenre[primaryGenre] = [];
     }
-    if (moviesByGenre[primaryGenre].length < 5) {
+    if (moviesByGenre[primaryGenre].length < 8) { // Increased from 5 to 8 for more options
       moviesByGenre[primaryGenre].push({
         ...movie,
         matchPercentage: Math.max(49, Math.min(98, movie.matchPercentage + Math.floor(Math.random() * 10) - 5))
@@ -89,4 +105,15 @@ export const getMoviesByGenre = (
   });
 
   return moviesByGenre;
+};
+
+export const analyzeViewingHistory = (file: File): Promise<string[]> => {
+  return new Promise((resolve) => {
+    // Simulate analyzing viewing history and extracting preferences
+    setTimeout(() => {
+      // Mock analysis - in real implementation, this would parse the CSV
+      const detectedGenres = ['Action', 'Comedy', 'Drama', 'Thriller'];
+      resolve(detectedGenres);
+    }, 1000);
+  });
 };

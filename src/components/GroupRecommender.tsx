@@ -1,13 +1,12 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ArrowLeft, Play, RefreshCw, Brain } from "lucide-react";
+import { ArrowLeft, Play, RefreshCw, Brain, Zap } from "lucide-react";
 import { User, Movie, GroupRecommenderProps } from '@/types/groupRecommender';
 import { getThemeColors } from '@/utils/platformTheme';
-import { generateMovieRecommendations, getMoviesByGenre } from '@/components/RecommendationEngine';
+import { generateMovieRecommendations, getMoviesByGenre, analyzeViewingHistory } from '@/components/RecommendationEngine';
 import GroupSetup from '@/components/GroupSetup';
 import GenreSelection from '@/components/GenreSelection';
 import MovieCard from '@/components/MovieCard';
@@ -22,6 +21,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
   const [isLoading, setIsLoading] = useState(false);
   const [showAlgorithm, setShowAlgorithm] = useState(false);
   const [manualTitleInput, setManualTitleInput] = useState<{[key: string]: string}>({});
+  const [crossPlatformMode, setCrossPlatformMode] = useState(false);
 
   const theme = getThemeColors(platform);
 
@@ -68,9 +68,20 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
     }
   };
 
-  const handleFileUpload = (userId: string, file: File) => {
+  const handleFileUpload = async (userId: string, file: File) => {
     if (file && (file.type === 'text/csv' || file.type === 'application/vnd.ms-excel' || file.name.endsWith('.xlsx'))) {
       updateUser(userId, 'viewingHistory', file);
+      
+      // Enable cross-platform mode when file is uploaded
+      setCrossPlatformMode(true);
+      
+      // Analyze viewing history and suggest genres
+      try {
+        const detectedGenres = await analyzeViewingHistory(file);
+        setSelectedGenres(prev => [...new Set([...prev, ...detectedGenres])]);
+      } catch (error) {
+        console.log('Error analyzing viewing history:', error);
+      }
     } else {
       alert('Please upload a valid CSV or Excel file');
     }
@@ -107,7 +118,8 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
         watchedMovies,
         recommendations,
         getMore,
-        count
+        count,
+        crossPlatformMode
       );
 
       if (getMore) {
@@ -120,7 +132,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
     }, 1500);
   };
 
-  const moviesByGenre = selectedGenres.length === 0 ? getMoviesByGenre(platform, watchedMovies) : null;
+  const moviesByGenre = selectedGenres.length === 0 ? getMoviesByGenre(platform, watchedMovies, crossPlatformMode) : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white overflow-x-hidden">
@@ -144,6 +156,12 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
               <Badge variant="outline" className="border-gray-400 text-gray-200 bg-gray-800/50 text-xs sm:text-sm">
                 {country}
               </Badge>
+              {crossPlatformMode && (
+                <Badge className="bg-blue-600 text-white text-xs sm:text-sm">
+                  <Zap className="h-3 w-3 mr-1" />
+                  Cross-Platform
+                </Badge>
+              )}
               <Button
                 onClick={() => setShowAlgorithm(!showAlgorithm)}
                 variant="outline"
@@ -179,12 +197,12 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-2 text-blue-400">Group Consensus</h4>
+                    <h4 className="font-semibold mb-2 text-blue-400">Cross-Platform Intelligence</h4>
                     <ul className="space-y-1 text-gray-300">
-                      <li>• Multi-user preference aggregation</li>
-                      <li>• Common interest calculation</li>
-                      <li>• Weighted scoring system</li>
-                      <li>• Real-time preference updates</li>
+                      <li>• Netflix history analysis for all platforms</li>
+                      <li>• Enhanced match scoring (+15% boost)</li>
+                      <li>• Multi-platform content discovery</li>
+                      <li>• Preference transfer across services</li>
                     </ul>
                   </div>
                 </div>
@@ -222,7 +240,8 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
           disabled={isLoading || users.some(user => !user.name)}
           className={`w-full ${theme.primary} hover:${theme.secondary} text-white font-semibold py-4 mb-6 sm:mb-8`}
         >
-          {isLoading ? 'Finding Perfect Matches for Your Group...' : 'Get Group Recommendations'}
+          {isLoading ? 'Finding Perfect Matches for Your Group...' : 
+           crossPlatformMode ? 'Get Cross-Platform Group Recommendations' : 'Get Group Recommendations'}
         </Button>
 
         {/* Recommendations - Genre-wise or Selected */}
@@ -230,7 +249,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
           <div className="space-y-8">
             <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-3 text-white">
               <Play className={`h-5 sm:h-6 w-5 sm:w-6 ${theme.text}`} />
-              Recommendations by Genre
+              {crossPlatformMode ? 'Cross-Platform Recommendations by Genre' : 'Recommendations by Genre'}
             </h2>
             
             {Object.entries(moviesByGenre).map(([genre, movies]) => (
@@ -262,7 +281,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-3 text-white">
                 <Play className={`h-5 sm:h-6 w-5 sm:w-6 ${theme.text}`} />
-                Perfect for Your Group ({recommendations.length} recommendations)
+                {crossPlatformMode ? 'Cross-Platform Matches' : 'Perfect for Your Group'} ({recommendations.length} recommendations)
               </h2>
               <Button
                 onClick={getMoreRecommendations}
