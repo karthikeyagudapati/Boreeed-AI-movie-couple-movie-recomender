@@ -17,26 +17,39 @@ export const generateMovieRecommendations = (
 
   console.log('Cross-platform mode:', crossPlatform);
   console.log('Selected platform:', platform);
+  console.log('Total movies in database:', filteredMovies.length);
 
-  // Platform filtering logic
+  // Enhanced Platform filtering logic
   if (!crossPlatform) {
     const platformName = platform.charAt(0).toUpperCase() + platform.slice(1).replace('-', ' ');
+    console.log('Filtering for platform:', platformName);
+    
     if (platformName !== 'All') {
-      filteredMovies = filteredMovies.filter(movie => 
-        movie.availableOn.includes(platformName) || 
-        movie.availableOn.some(p => p.toLowerCase().includes(platform.toLowerCase()))
-      );
+      filteredMovies = filteredMovies.filter(movie => {
+        const hasExactMatch = movie.availableOn.includes(platformName);
+        const hasPartialMatch = movie.availableOn.some(p => 
+          p.toLowerCase().includes(platform.toLowerCase()) ||
+          platform.toLowerCase().includes(p.toLowerCase())
+        );
+        return hasExactMatch || hasPartialMatch;
+      });
+      
+      console.log(`Movies available on ${platformName}:`, filteredMovies.length);
     }
+  } else {
+    console.log('Cross-platform mode: showing all movies');
   }
 
   // Filter by match percentage (49% or higher)
   filteredMovies = filteredMovies.filter(movie => movie.matchPercentage >= 49);
+  console.log('Movies above 49% match:', filteredMovies.length);
 
   // Filter by selected genres if any
   if (selectedGenres.length > 0) {
     filteredMovies = filteredMovies.filter(movie => 
       movie.genres.some(genre => selectedGenres.includes(genre))
     );
+    console.log('Movies matching selected genres:', filteredMovies.length);
   }
 
   // Filter out watched movies
@@ -58,12 +71,17 @@ export const generateMovieRecommendations = (
     }));
   }
 
+  // If no movies found for specific platform, suggest enabling cross-platform
+  if (filteredMovies.length === 0 && !crossPlatform) {
+    console.warn(`No movies found for ${platform}. Consider enabling cross-platform mode.`);
+  }
+
   // Shuffle and get random movies
   const shuffled = filteredMovies.sort(() => Math.random() - 0.5);
   const numberOfMovies = Math.min(shuffled.length, count);
   const selectedMovies = shuffled.slice(0, numberOfMovies);
 
-  console.log('Filtered movies count:', filteredMovies.length);
+  console.log('Final filtered movies count:', filteredMovies.length);
   console.log('Selected movies count:', selectedMovies.length);
 
   // Add some randomness to the scores
@@ -83,15 +101,24 @@ export const getMoviesByGenre = (
   let filteredMovies = [...expandedMovieDatabase, ...movieDatabase];
 
   console.log('Genre filtering - Cross-platform:', crossPlatform, 'Platform:', platform);
+  console.log('Total movies for genre filtering:', filteredMovies.length);
 
   // Filter by platform unless cross-platform is enabled
   if (!crossPlatform) {
     const platformName = platform.charAt(0).toUpperCase() + platform.slice(1).replace('-', ' ');
+    console.log('Genre filtering for platform:', platformName);
+    
     if (platformName !== 'All') {
-      filteredMovies = filteredMovies.filter(movie => 
-        movie.availableOn.includes(platformName) || 
-        movie.availableOn.some(p => p.toLowerCase().includes(platform.toLowerCase()))
-      );
+      filteredMovies = filteredMovies.filter(movie => {
+        const hasExactMatch = movie.availableOn.includes(platformName);
+        const hasPartialMatch = movie.availableOn.some(p => 
+          p.toLowerCase().includes(platform.toLowerCase()) ||
+          platform.toLowerCase().includes(p.toLowerCase())
+        );
+        return hasExactMatch || hasPartialMatch;
+      });
+      
+      console.log(`Genre movies available on ${platformName}:`, filteredMovies.length);
     }
   }
 
@@ -102,14 +129,14 @@ export const getMoviesByGenre = (
 
   console.log('Total filtered movies for genres:', filteredMovies.length);
 
-  // Group by primary genre and show MORE movies per genre (20 per genre)
+  // Group by primary genre and show MORE movies per genre (25 per genre)
   filteredMovies.forEach(movie => {
     const primaryGenre = movie.genres[0];
     if (!moviesByGenre[primaryGenre]) {
       moviesByGenre[primaryGenre] = [];
     }
-    // Show up to 20 movies per genre for better recommendations
-    if (moviesByGenre[primaryGenre].length < 20) {
+    // Show up to 25 movies per genre for better recommendations
+    if (moviesByGenre[primaryGenre].length < 25) {
       moviesByGenre[primaryGenre].push({
         ...movie,
         matchPercentage: Math.max(49, Math.min(98, movie.matchPercentage + Math.floor(Math.random() * 10) - 5))
