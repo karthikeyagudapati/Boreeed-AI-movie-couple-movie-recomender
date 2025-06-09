@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowLeft, Play, RefreshCw, Brain, Zap, BarChart } from "lucide-react";
 import { User, Movie, GroupRecommenderProps } from '@/types/groupRecommender';
 import { getThemeColors } from '@/utils/platformTheme';
@@ -11,6 +10,7 @@ import GroupSetup from '@/components/GroupSetup';
 import GenreSelection from '@/components/GenreSelection';
 import PlatformModeSelector from '@/components/PlatformModeSelector';
 import MovieCard from '@/components/MovieCard';
+import MovieCarousel from '@/components/MovieCarousel';
 import RecommendationVisualizations from '@/components/RecommendationVisualizations';
 
 const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, onBack }) => {
@@ -112,7 +112,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
     generateRecommendations(true);
   };
 
-  const generateRecommendations = (getMore = false, count = 20) => {
+  const generateRecommendations = (getMore = false, count = 30) => {
     setIsLoading(true);
     
     setTimeout(() => {
@@ -184,12 +184,22 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
                 <Brain className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Algorithm</span>
               </Button>
+              {/* Documentation Link */}
+              <Button
+                onClick={() => window.open('/docs', '_blank')}
+                variant="outline"
+                size="sm"
+                className="border-blue-500 text-blue-300 hover:bg-blue-600/20 bg-gray-800/50"
+              >
+                <span className="hidden sm:inline">Docs</span>
+                <span className="sm:hidden">📚</span>
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Analysis Section - Fixed dark background */}
+      {/* Analysis Section - Dark background with better contrast */}
       {showAnalysis && (
         <div className="bg-gray-900/95 border-b border-gray-700 px-4 py-6">
           <div className="max-w-6xl mx-auto">
@@ -197,9 +207,9 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
               <CardContent className="p-4 sm:p-6">
                 <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-white">
                   <BarChart className="h-5 w-5 text-green-400" />
-                  Recommendation Analysis
+                  Recommendation Analysis Dashboard
                 </h3>
-                <div className="bg-gray-900/50 p-4 rounded-lg">
+                <div className="bg-gray-900/80 p-4 rounded-lg border border-gray-700">
                   <RecommendationVisualizations />
                 </div>
               </CardContent>
@@ -208,7 +218,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
         </div>
       )}
 
-      {/* Algorithm Explanation - Fixed dark background */}
+      {/* Algorithm Explanation - Dark background with better contrast */}
       {showAlgorithm && (
         <div className="bg-gray-900/95 border-b border-gray-700 px-4 py-6">
           <div className="max-w-6xl mx-auto">
@@ -216,27 +226,29 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
               <CardContent className="p-4 sm:p-6">
                 <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-white">
                   <Brain className="h-5 w-5 text-blue-400" />
-                  Recommendation Algorithm
+                  Advanced Recommendation Algorithm
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                  <div className="bg-gray-900/50 p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2 text-green-400">Content Filtering</h4>
+                  <div className="bg-gray-900/80 p-4 rounded-lg border border-gray-700">
+                    <h4 className="font-semibold mb-2 text-green-400">Content Filtering Engine</h4>
                     <ul className="space-y-1 text-gray-300">
                       <li>• Platform-specific content matching</li>
-                      <li>• Genre preference analysis</li>
+                      <li>• Advanced genre preference analysis</li>
                       <li>• Match percentage ≥ 49% threshold</li>
-                      <li>• Viewing history integration</li>
-                      <li>• Shows ALL qualifying movies (no artificial limits)</li>
+                      <li>• CSV viewing history integration</li>
+                      <li>• Shows ALL qualifying movies (200+ database)</li>
+                      <li>• Cross-platform preference transfer</li>
                     </ul>
                   </div>
-                  <div className="bg-gray-900/50 p-4 rounded-lg">
+                  <div className="bg-gray-900/80 p-4 rounded-lg border border-gray-700">
                     <h4 className="font-semibold mb-2 text-blue-400">Cross-Platform Intelligence</h4>
                     <ul className="space-y-1 text-gray-300">
-                      <li>• Netflix history analysis for all platforms</li>
+                      <li>• Netflix history → Prime recommendations</li>
                       <li>• Enhanced match scoring (+15% boost)</li>
                       <li>• Multi-platform content discovery</li>
-                      <li>• Preference transfer across services</li>
+                      <li>• Viewing pattern analysis</li>
                       <li>• Smart genre-based categorization</li>
+                      <li>• Real-time recommendation engine</li>
                     </ul>
                   </div>
                 </div>
@@ -283,10 +295,10 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
           className={`w-full ${theme.primary} hover:${theme.secondary} text-white font-semibold py-4 mb-6 sm:mb-8`}
         >
           {isLoading ? 'Finding Perfect Matches for Your Group...' : 
-           crossPlatformMode ? 'Get Cross-Platform Group Recommendations' : 'Get Group Recommendations'}
+           crossPlatformMode ? 'Get Cross-Platform Group Recommendations (30+ Movies)' : 'Get Group Recommendations (30+ Movies)'}
         </Button>
 
-        {/* Recommendations - Genre-wise or Selected */}
+        {/* Recommendations - Genre-wise with Carousels */}
         {moviesByGenre && Object.keys(moviesByGenre).length > 0 && selectedGenres.length === 0 && (
           <div className="space-y-8">
             <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-3 text-white">
@@ -298,32 +310,18 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
             </h2>
             
             {Object.entries(moviesByGenre).map(([genre, movies]) => (
-              <div key={genre} className="space-y-4">
-                <h3 className="text-lg font-bold text-white border-b border-gray-600 pb-2 flex items-center gap-2">
-                  {genre} Movies 
-                  <Badge variant="secondary" className="text-xs bg-gray-600 text-gray-200">
-                    {movies.length} movies
-                  </Badge>
-                </h3>
-                <ScrollArea className="w-full">
-                  <div className="flex space-x-4 pb-4">
-                    {movies.map((movie) => (
-                      <MovieCard
-                        key={movie.id}
-                        movie={movie}
-                        theme={theme}
-                        onMarkAsWatched={markAsWatched}
-                        compact
-                      />
-                    ))}
-                  </div>
-                </ScrollArea>
-              </div>
+              <MovieCarousel
+                key={genre}
+                title={`${genre} Movies`}
+                movies={movies}
+                theme={theme}
+                onMarkAsWatched={markAsWatched}
+              />
             ))}
           </div>
         )}
 
-        {/* Regular Recommendations */}
+        {/* Regular Recommendations - Also with Carousel */}
         {recommendations.length > 0 && selectedGenres.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-6">

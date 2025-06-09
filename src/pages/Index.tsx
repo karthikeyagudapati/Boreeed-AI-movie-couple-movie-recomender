@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import OTTSelector from "@/components/OTTSelector";
 import GroupRecommender from "@/components/GroupRecommender";
@@ -77,14 +76,15 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
-              {/* Theme Toggle */}
-              <div className="flex items-center gap-2">
-                <Sun className="h-4 w-4" />
+              {/* Enhanced Theme Toggle with better visibility */}
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-gray-800/20 border border-gray-600/30">
+                <Sun className={`h-4 w-4 ${isDarkTheme ? 'text-gray-400' : 'text-yellow-500'}`} />
                 <Switch 
                   checked={isDarkTheme}
                   onCheckedChange={setIsDarkTheme}
+                  className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-gray-300"
                 />
-                <Moon className="h-4 w-4" />
+                <Moon className={`h-4 w-4 ${isDarkTheme ? 'text-blue-400' : 'text-gray-400'}`} />
               </div>
               <Button 
                 variant={buttonVariant} 

@@ -1,6 +1,7 @@
 
 import { Movie } from '@/types/groupRecommender';
 import { movieDatabase } from '@/utils/movieDatabase';
+import { expandedMovieDatabase } from '@/utils/expandedMovieDatabase';
 
 export const generateMovieRecommendations = (
   platform: string,
@@ -8,16 +9,16 @@ export const generateMovieRecommendations = (
   watchedMovies: Set<number>,
   currentMovies: Movie[] = [],
   getMore: boolean = false,
-  count: number = 20,
+  count: number = 30,
   crossPlatform: boolean = false
 ): Movie[] => {
-  let filteredMovies = [...movieDatabase];
+  // Use expanded database for more variety
+  let filteredMovies = [...expandedMovieDatabase, ...movieDatabase];
 
   console.log('Cross-platform mode:', crossPlatform);
   console.log('Selected platform:', platform);
 
-  // If cross-platform is enabled, include movies from all platforms
-  // Otherwise, filter by the selected platform
+  // Platform filtering logic
   if (!crossPlatform) {
     const platformName = platform.charAt(0).toUpperCase() + platform.slice(1).replace('-', ' ');
     if (platformName !== 'All') {
@@ -47,12 +48,12 @@ export const generateMovieRecommendations = (
     filteredMovies = filteredMovies.filter(movie => !currentMovieIds.includes(movie.id));
   }
 
-  // If cross-platform and viewing history is available, boost relevance
+  // Enhanced cross-platform logic for viewing history analysis
   if (crossPlatform) {
-    // Prioritize movies that are similar to Netflix viewing patterns
+    // Boost relevance for cross-platform recommendations
     filteredMovies = filteredMovies.map(movie => ({
       ...movie,
-      matchPercentage: Math.min(98, movie.matchPercentage + 15), // Boost match for cross-platform
+      matchPercentage: Math.min(98, movie.matchPercentage + 15),
       commonInterest: Math.min(98, movie.commonInterest + 10)
     }));
   }
@@ -79,7 +80,7 @@ export const getMoviesByGenre = (
   crossPlatform: boolean = false
 ): { [key: string]: Movie[] } => {
   const moviesByGenre: { [key: string]: Movie[] } = {};
-  let filteredMovies = [...movieDatabase];
+  let filteredMovies = [...expandedMovieDatabase, ...movieDatabase];
 
   console.log('Genre filtering - Cross-platform:', crossPlatform, 'Platform:', platform);
 
@@ -94,21 +95,21 @@ export const getMoviesByGenre = (
     }
   }
 
-  // Show ALL movies with match percentage >= 49% (not limiting to top movies)
+  // Show ALL movies with match percentage >= 49%
   filteredMovies = filteredMovies.filter(movie => 
     movie.matchPercentage >= 49 && !watchedMovies.has(movie.id)
   );
 
   console.log('Total filtered movies for genres:', filteredMovies.length);
 
-  // Group by primary genre and show MORE movies per genre
+  // Group by primary genre and show MORE movies per genre (20 per genre)
   filteredMovies.forEach(movie => {
     const primaryGenre = movie.genres[0];
     if (!moviesByGenre[primaryGenre]) {
       moviesByGenre[primaryGenre] = [];
     }
-    // Show up to 12 movies per genre instead of limiting
-    if (moviesByGenre[primaryGenre].length < 12) {
+    // Show up to 20 movies per genre for better recommendations
+    if (moviesByGenre[primaryGenre].length < 20) {
       moviesByGenre[primaryGenre].push({
         ...movie,
         matchPercentage: Math.max(49, Math.min(98, movie.matchPercentage + Math.floor(Math.random() * 10) - 5))
