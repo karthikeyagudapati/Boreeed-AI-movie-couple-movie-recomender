@@ -1,7 +1,7 @@
-
 import { Movie } from '@/types/groupRecommender';
 import { movieDatabase } from '@/utils/movieDatabase';
 import { expandedMovieDatabase } from '@/utils/expandedMovieDatabase';
+import { megaMovieDatabase } from '@/utils/megaMovieDatabase';
 
 export const generateMovieRecommendations = (
   platform: string,
@@ -9,11 +9,49 @@ export const generateMovieRecommendations = (
   watchedMovies: Set<number>,
   currentMovies: Movie[] = [],
   getMore: boolean = false,
-  count: number = 30,
-  crossPlatform: boolean = false
+  count: number = 50,
+  crossPlatform: boolean = false,
+  manualTitles: string[] = []
 ): Movie[] => {
-  // Use MASSIVE expanded database for more variety (500+ movies)
-  let filteredMovies = [...expandedMovieDatabase, ...movieDatabase];
+  // Use MEGA database for maximum variety (1000+ movies)
+  let filteredMovies = [...megaMovieDatabase, ...expandedMovieDatabase, ...movieDatabase];
+
+  console.log('Cross-platform mode:', crossPlatform);
+  console.log('Selected platform:', platform);
+  console.log('Manual titles provided:', manualTitles);
+  console.log('Total movies in database:', filteredMovies.length);
+
+  // Analyze manual titles to boost similar movies
+  if (manualTitles && manualTitles.length > 0) {
+    console.log('Analyzing manual titles for preferences:', manualTitles);
+    
+    // Extract genres from manual titles by matching with existing movies
+    const inferredGenres = new Set<string>();
+    manualTitles.forEach(title => {
+      const matchingMovies = filteredMovies.filter(movie => 
+        movie.title.toLowerCase().includes(title.toLowerCase()) ||
+        title.toLowerCase().includes(movie.title.toLowerCase())
+      );
+      
+      matchingMovies.forEach(movie => {
+        movie.genres.forEach(genre => inferredGenres.add(genre));
+      });
+    });
+    
+    console.log('Inferred genres from manual titles:', Array.from(inferredGenres));
+    
+    // Boost movies with similar genres
+    filteredMovies = filteredMovies.map(movie => {
+      const hasInferredGenre = movie.genres.some(genre => inferredGenres.has(genre));
+      const matchBoost = hasInferredGenre ? 20 : 0;
+      
+      return {
+        ...movie,
+        matchPercentage: Math.min(98, movie.matchPercentage + matchBoost),
+        commonInterest: Math.min(98, movie.commonInterest + matchBoost)
+      };
+    });
+  }
 
   console.log('Cross-platform mode:', crossPlatform);
   console.log('Selected platform:', platform);
@@ -73,9 +111,9 @@ export const generateMovieRecommendations = (
     console.log('Cross-platform mode: showing all movies');
   }
 
-  // Filter by match percentage (45% or higher for more variety)
-  filteredMovies = filteredMovies.filter(movie => movie.matchPercentage >= 45);
-  console.log('Movies above 45% match:', filteredMovies.length);
+  // Filter by match percentage (35% or higher for maximum variety)
+  filteredMovies = filteredMovies.filter(movie => movie.matchPercentage >= 35);
+  console.log('Movies above 35% match:', filteredMovies.length);
 
   // Filter by selected genres if any
   if (selectedGenres.length > 0) {
@@ -135,8 +173,8 @@ export const generateMovieRecommendations = (
   // Add some randomness to the scores for variety
   return selectedMovies.map(movie => ({
     ...movie,
-    matchPercentage: Math.max(45, Math.min(98, movie.matchPercentage + Math.floor(Math.random() * 10) - 5)),
-    commonInterest: Math.max(45, Math.min(98, movie.commonInterest + Math.floor(Math.random() * 10) - 5))
+    matchPercentage: Math.max(35, Math.min(98, movie.matchPercentage + Math.floor(Math.random() * 10) - 5)),
+    commonInterest: Math.max(35, Math.min(98, movie.commonInterest + Math.floor(Math.random() * 10) - 5))
   }));
 };
 
@@ -146,7 +184,7 @@ export const getMoviesByGenre = (
   crossPlatform: boolean = false
 ): { [key: string]: Movie[] } => {
   const moviesByGenre: { [key: string]: Movie[] } = {};
-  let filteredMovies = [...expandedMovieDatabase, ...movieDatabase];
+  let filteredMovies = [...megaMovieDatabase, ...expandedMovieDatabase, ...movieDatabase];
 
   console.log('Genre filtering - Cross-platform:', crossPlatform, 'Platform:', platform);
   console.log('Total movies for genre filtering:', filteredMovies.length);
@@ -219,11 +257,11 @@ export const getMoviesByGenre = (
     if (!moviesByGenre[primaryGenre]) {
       moviesByGenre[primaryGenre] = [];
     }
-    // Show up to 30 movies per genre for extensive recommendations
-    if (moviesByGenre[primaryGenre].length < 30) {
+    // Show up to 40 movies per genre for extensive recommendations
+    if (moviesByGenre[primaryGenre].length < 40) {
       moviesByGenre[primaryGenre].push({
         ...movie,
-        matchPercentage: Math.max(45, Math.min(98, movie.matchPercentage + Math.floor(Math.random() * 8) - 4))
+        matchPercentage: Math.max(35, Math.min(98, movie.matchPercentage + Math.floor(Math.random() * 8) - 4))
       });
     }
   });
@@ -246,4 +284,64 @@ export const analyzeViewingHistory = (file: File): Promise<string[]> => {
       resolve(detectedGenres);
     }, 1000);
   });
+};
+
+// Updated search function to use mega database
+export const searchSimilarMovies = (searchTitle: string, platform: string, crossPlatform: boolean = false): Movie[] => {
+  let allMovies = [...megaMovieDatabase, ...expandedMovieDatabase, ...movieDatabase];
+  
+  // Filter by platform if not cross-platform
+  if (!crossPlatform) {
+    const platformName = platform.charAt(0).toUpperCase() + platform.slice(1).replace('-', ' ');
+    allMovies = allMovies.filter(movie => 
+      movie.availableOn.includes(platformName) || 
+      movie.availableOn.some(p => p.toLowerCase().includes(platform.toLowerCase()))
+    );
+  }
+  
+  // Find the searched movie first
+  const searchedMovie = allMovies.find(movie => 
+    movie.title.toLowerCase().includes(searchTitle.toLowerCase()) ||
+    searchTitle.toLowerCase().includes(movie.title.toLowerCase())
+  );
+  
+  if (!searchedMovie) {
+    // If exact match not found, return movies with similar keywords
+    const keywords = searchTitle.toLowerCase().split(' ');
+    return allMovies.filter(movie => 
+      keywords.some(keyword => 
+        movie.title.toLowerCase().includes(keyword) ||
+        movie.description.toLowerCase().includes(keyword) ||
+        movie.genres.some(genre => genre.toLowerCase().includes(keyword))
+      )
+    ).slice(0, 30);
+  }
+  
+  // Find similar movies based on genres, director, cast
+  const similarMovies = allMovies.filter(movie => {
+    if (movie.id === searchedMovie.id) return false;
+    
+    const sharedGenres = movie.genres.filter(genre => searchedMovie.genres.includes(genre)).length;
+    const sameDirector = movie.director === searchedMovie.director;
+    const sharedCast = movie.cast.some(actor => searchedMovie.cast.includes(actor));
+    
+    return sharedGenres > 0 || sameDirector || sharedCast;
+  });
+  
+  // Sort by similarity score
+  const scoredMovies = similarMovies.map(movie => {
+    const sharedGenres = movie.genres.filter(genre => searchedMovie.genres.includes(genre)).length;
+    const sameDirector = movie.director === searchedMovie.director ? 15 : 0;
+    const sharedCast = movie.cast.filter(actor => searchedMovie.cast.includes(actor)).length;
+    
+    const similarityScore = (sharedGenres * 4) + sameDirector + (sharedCast * 2);
+    
+    return {
+      ...movie,
+      matchPercentage: Math.min(95, movie.matchPercentage + similarityScore * 2),
+      commonInterest: Math.min(95, movie.commonInterest + similarityScore * 2)
+    };
+  });
+  
+  return scoredMovies.sort((a, b) => b.matchPercentage - a.matchPercentage).slice(0, 30);
 };

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Play, RefreshCw, Brain, Zap, BarChart } from "lucide-react";
 import { User, Movie, GroupRecommenderProps } from '@/types/groupRecommender';
 import { getThemeColors } from '@/utils/platformTheme';
-import { generateMovieRecommendations, getMoviesByGenre, analyzeViewingHistory } from '@/components/RecommendationEngine';
+import { generateMovieRecommendations, getMoviesByGenre, analyzeViewingHistory, searchSimilarMovies } from '@/components/RecommendationEngine';
 import GroupSetup from '@/components/GroupSetup';
 import GenreSelection from '@/components/GenreSelection';
 import PlatformModeSelector from '@/components/PlatformModeSelector';
@@ -25,6 +26,9 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [manualTitleInput, setManualTitleInput] = useState<{[key: string]: string}>({});
   const [crossPlatformMode, setCrossPlatformMode] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Movie[]>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
 
   const theme = getThemeColors(platform);
   const hasViewingHistory = users.some(user => user.viewingHistory);
@@ -115,6 +119,10 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
   const generateRecommendations = (getMore = false, count = 30) => {
     setIsLoading(true);
     
+    // Collect all manual titles from all users
+    const allManualTitles = users.flatMap(user => user.manualTitles || []);
+    console.log('All manual titles from users:', allManualTitles);
+    
     setTimeout(() => {
       const newMovies = generateMovieRecommendations(
         platform,
@@ -123,7 +131,8 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
         recommendations,
         getMore,
         count,
-        crossPlatformMode
+        crossPlatformMode,
+        allManualTitles // Pass manual titles to recommendation engine
       );
 
       if (getMore) {
@@ -134,6 +143,19 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
       
       setIsLoading(false);
     }, 1500);
+  };
+
+  const searchSimilarMovies = (query: string, platform: string, crossPlatformMode: boolean): Movie[] => {
+    // Implement your search logic here
+    return [];
+  };
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      const results = searchSimilarMovies(searchQuery, platform, crossPlatformMode);
+      setSearchResults(results);
+      setShowSearchResults(true);
+    }
   };
 
   const moviesByGenre = selectedGenres.length === 0 ? getMoviesByGenre(platform, watchedMovies, crossPlatformMode) : null;
@@ -259,6 +281,62 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
       )}
 
       <div className="max-w-6xl mx-auto p-4 sm:p-6">
+        {/* Movie Search Section */}
+        <Card className="mb-6 bg-gray-800/70 border-gray-600 shadow-2xl backdrop-blur-md">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Brain className={`h-6 w-6 ${theme.text}`} />
+              <h2 className="text-xl font-bold text-white">Find Similar Movies</h2>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Enter a movie title to find similar recommendations..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                className="bg-gray-700/50 border-gray-600 text-gray-200 placeholder-gray-400"
+              />
+              <Button
+                onClick={handleSearch}
+                disabled={!searchQuery.trim()}
+                className={`${theme.primary} hover:${theme.secondary} text-white`}
+              >
+                Search
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Search Results */}
+        {showSearchResults && searchResults.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold flex items-center gap-3 text-white">
+                <Play className={`h-5 w-5 ${theme.text}`} />
+                Similar to "{searchQuery}" ({searchResults.length} movies)
+              </h2>
+              <Button
+                onClick={() => setShowSearchResults(false)}
+                variant="outline"
+                size="sm"
+                className="text-gray-300 border-gray-500 hover:bg-gray-700"
+              >
+                Hide Results
+              </Button>
+            </div>
+            <div className="space-y-4">
+              {searchResults.map((movie) => (
+                <MovieCard
+                  key={movie.id}
+                  movie={movie}
+                  theme={theme}
+                  onMarkAsWatched={markAsWatched}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Group Setup */}
         <GroupSetup
           users={users}
@@ -295,7 +373,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
           className={`w-full ${theme.primary} hover:${theme.secondary} text-white font-semibold py-4 mb-6 sm:mb-8`}
         >
           {isLoading ? 'Finding Perfect Matches for Your Group...' : 
-           crossPlatformMode ? 'Get Cross-Platform Group Recommendations (30+ Movies)' : 'Get Group Recommendations (30+ Movies)'}
+           crossPlatformMode ? 'Get Cross-Platform Group Recommendations (50+ Movies)' : 'Get Group Recommendations (50+ Movies)'}
         </Button>
 
         {/* Recommendations - Genre-wise with Carousels */}
