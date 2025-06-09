@@ -112,7 +112,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
     generateRecommendations(true);
   };
 
-  const generateRecommendations = (getMore = false, count = 15) => {
+  const generateRecommendations = (getMore = false, count = 20) => {
     setIsLoading(true);
     
     setTimeout(() => {
@@ -170,7 +170,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
                 onClick={() => setShowAnalysis(!showAnalysis)}
                 variant="outline"
                 size="sm"
-                className="border-gray-500 text-gray-200 hover:bg-gray-600"
+                className="border-gray-500 text-gray-200 hover:bg-gray-600 bg-gray-800/50"
               >
                 <BarChart className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Analysis</span>
@@ -179,7 +179,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
                 onClick={() => setShowAlgorithm(!showAlgorithm)}
                 variant="outline"
                 size="sm"
-                className="border-gray-500 text-gray-200 hover:bg-gray-600"
+                className="border-gray-500 text-gray-200 hover:bg-gray-600 bg-gray-800/50"
               >
                 <Brain className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Algorithm</span>
@@ -189,35 +189,37 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
         </div>
       </div>
 
-      {/* Analysis Section */}
+      {/* Analysis Section - Fixed dark background */}
       {showAnalysis && (
-        <div className="bg-gray-800/90 border-b border-gray-700 px-4 py-6">
+        <div className="bg-gray-900/95 border-b border-gray-700 px-4 py-6">
           <div className="max-w-6xl mx-auto">
-            <Card className="bg-gray-700/70 border-gray-500">
+            <Card className="bg-gray-800/90 border-gray-600 shadow-xl">
               <CardContent className="p-4 sm:p-6">
-                <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-white">
                   <BarChart className="h-5 w-5 text-green-400" />
                   Recommendation Analysis
                 </h3>
-                <RecommendationVisualizations />
+                <div className="bg-gray-900/50 p-4 rounded-lg">
+                  <RecommendationVisualizations />
+                </div>
               </CardContent>
             </Card>
           </div>
         </div>
       )}
 
-      {/* Algorithm Explanation */}
+      {/* Algorithm Explanation - Fixed dark background */}
       {showAlgorithm && (
-        <div className="bg-gray-800/90 border-b border-gray-700 px-4 py-6">
+        <div className="bg-gray-900/95 border-b border-gray-700 px-4 py-6">
           <div className="max-w-6xl mx-auto">
-            <Card className="bg-gray-700/70 border-gray-500">
+            <Card className="bg-gray-800/90 border-gray-600 shadow-xl">
               <CardContent className="p-4 sm:p-6">
-                <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-white">
                   <Brain className="h-5 w-5 text-blue-400" />
                   Recommendation Algorithm
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                  <div>
+                  <div className="bg-gray-900/50 p-4 rounded-lg">
                     <h4 className="font-semibold mb-2 text-green-400">Content Filtering</h4>
                     <ul className="space-y-1 text-gray-300">
                       <li>• Platform-specific content matching</li>
@@ -227,7 +229,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
                       <li>• Shows ALL qualifying movies (no artificial limits)</li>
                     </ul>
                   </div>
-                  <div>
+                  <div className="bg-gray-900/50 p-4 rounded-lg">
                     <h4 className="font-semibold mb-2 text-blue-400">Cross-Platform Intelligence</h4>
                     <ul className="space-y-1 text-gray-300">
                       <li>• Netflix history analysis for all platforms</li>
@@ -290,7 +292,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
             <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-3 text-white">
               <Play className={`h-5 sm:h-6 w-5 sm:w-6 ${theme.text}`} />
               {crossPlatformMode ? 'Cross-Platform Recommendations by Genre' : 'Recommendations by Genre'}
-              <Badge variant="outline" className="text-xs text-gray-300">
+              <Badge variant="outline" className="text-xs text-gray-300 border-gray-500">
                 All Movies Above 49% Match
               </Badge>
             </h2>

@@ -39,7 +39,7 @@ const UserCard: React.FC<UserCardProps> = ({
   onManualTitleInputChange
 }) => {
   return (
-    <Card className="bg-gray-700/70 border-gray-500 backdrop-blur-sm">
+    <Card className="bg-gray-800/70 border-gray-600 backdrop-blur-sm">
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-4">
           <h3 className="text-base sm:text-lg font-semibold text-white">User {index + 1}</h3>
@@ -80,11 +80,11 @@ const UserCard: React.FC<UserCardProps> = ({
 
         <ManualTitleInput
           userId={user.id}
-          manualTitles={user.manualTitles || []}
+          titles={user.manualTitles || []}
           inputValue={manualTitleInput}
-          onInputChange={onManualTitleInputChange}
-          onAddTitle={onAddManualTitle}
-          onRemoveTitle={onRemoveManualTitle}
+          onInputChange={(userId, value) => onManualTitleInputChange(value)}
+          onAddTitle={(userId) => onAddManualTitle()}
+          onRemoveTitle={(userId, titleIndex) => onRemoveManualTitle(titleIndex)}
         />
       </CardContent>
     </Card>

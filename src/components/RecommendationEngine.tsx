@@ -8,10 +8,13 @@ export const generateMovieRecommendations = (
   watchedMovies: Set<number>,
   currentMovies: Movie[] = [],
   getMore: boolean = false,
-  count: number = 15,
+  count: number = 20,
   crossPlatform: boolean = false
 ): Movie[] => {
   let filteredMovies = [...movieDatabase];
+
+  console.log('Cross-platform mode:', crossPlatform);
+  console.log('Selected platform:', platform);
 
   // If cross-platform is enabled, include movies from all platforms
   // Otherwise, filter by the selected platform
@@ -59,6 +62,9 @@ export const generateMovieRecommendations = (
   const numberOfMovies = Math.min(shuffled.length, count);
   const selectedMovies = shuffled.slice(0, numberOfMovies);
 
+  console.log('Filtered movies count:', filteredMovies.length);
+  console.log('Selected movies count:', selectedMovies.length);
+
   // Add some randomness to the scores
   return selectedMovies.map(movie => ({
     ...movie,
@@ -74,6 +80,8 @@ export const getMoviesByGenre = (
 ): { [key: string]: Movie[] } => {
   const moviesByGenre: { [key: string]: Movie[] } = {};
   let filteredMovies = [...movieDatabase];
+
+  console.log('Genre filtering - Cross-platform:', crossPlatform, 'Platform:', platform);
 
   // Filter by platform unless cross-platform is enabled
   if (!crossPlatform) {
@@ -91,22 +99,27 @@ export const getMoviesByGenre = (
     movie.matchPercentage >= 49 && !watchedMovies.has(movie.id)
   );
 
-  // Group by primary genre and show ALL matching movies
+  console.log('Total filtered movies for genres:', filteredMovies.length);
+
+  // Group by primary genre and show MORE movies per genre
   filteredMovies.forEach(movie => {
     const primaryGenre = movie.genres[0];
     if (!moviesByGenre[primaryGenre]) {
       moviesByGenre[primaryGenre] = [];
     }
-    // Remove the limit, show all movies above 49%
-    moviesByGenre[primaryGenre].push({
-      ...movie,
-      matchPercentage: Math.max(49, Math.min(98, movie.matchPercentage + Math.floor(Math.random() * 10) - 5))
-    });
+    // Show up to 12 movies per genre instead of limiting
+    if (moviesByGenre[primaryGenre].length < 12) {
+      moviesByGenre[primaryGenre].push({
+        ...movie,
+        matchPercentage: Math.max(49, Math.min(98, movie.matchPercentage + Math.floor(Math.random() * 10) - 5))
+      });
+    }
   });
 
   // Sort movies within each genre by match percentage
   Object.keys(moviesByGenre).forEach(genre => {
     moviesByGenre[genre].sort((a, b) => b.matchPercentage - a.matchPercentage);
+    console.log(`${genre} movies:`, moviesByGenre[genre].length);
   });
 
   return moviesByGenre;

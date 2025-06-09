@@ -67,7 +67,13 @@ const Index = () => {
                 <span className={`hover:text-gray-300 cursor-pointer ${isDarkTheme ? "text-white" : "text-gray-900"}`}>Home</span>
                 <span className={`hover:text-gray-300 cursor-pointer ${isDarkTheme ? "text-white" : "text-gray-900"}`}>Platforms</span>
                 <span className={`hover:text-gray-300 cursor-pointer ${isDarkTheme ? "text-white" : "text-gray-900"}`}>Features</span>
-                <span className="text-red-500 font-medium cursor-pointer">AI Recommender</span>
+                <span 
+                  className="text-red-500 font-medium cursor-pointer hover:text-red-400"
+                  onClick={() => window.open('/docs', '_blank')}
+                >
+                  Documentation
+                </span>
+                <span className="text-blue-500 font-medium cursor-pointer">AI Recommender</span>
               </div>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
