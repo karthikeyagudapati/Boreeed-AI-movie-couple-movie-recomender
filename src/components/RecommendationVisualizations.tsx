@@ -34,7 +34,7 @@ const RecommendationVisualizations = () => {
   const insightsBgClasses = isDarkTheme ? "bg-gray-700/50" : "bg-gray-100";
 
   return (
-    <div className="space-y-4 sm:space-y-8">
+    <div className="space-y-4 sm:space-y-8 w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className={`text-xl sm:text-2xl font-bold ${themeClasses}`}>Recommendation Analytics</h2>
         <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/30 border border-gray-600/40">
@@ -55,64 +55,117 @@ const RecommendationVisualizations = () => {
           <TabsTrigger value="venn" className="data-[state=active]:bg-red-600 data-[state=active]:text-white text-xs sm:text-sm">Preference Overlap</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="genre" className="space-y-4 sm:space-y-6">
+        <TabsContent value="genre" className="space-y-4 sm:space-y-6 w-full">
           <Card className={cardClasses}>
             <CardHeader className="pb-4">
               <CardTitle className={`${themeClasses} text-lg sm:text-xl`}>Genre Preferences Comparison</CardTitle>
             </CardHeader>
-            <CardContent className="p-4 sm:p-6">
-              {/* Mobile-optimized table with proper scrolling */}
-              <div className="w-full border rounded-lg overflow-hidden">
-                <div className="overflow-x-auto max-h-96 overflow-y-auto">
-                  <Table className="w-full min-w-[600px]">
-                    <TableHeader className="sticky top-0 bg-gray-800/90 backdrop-blur-sm">
-                      <TableRow className="border-gray-600 hover:bg-transparent">
-                        <TableHead className={`font-semibold ${isDarkTheme ? "text-gray-300" : "text-gray-700"} py-3 px-4`}>Genre</TableHead>
-                        <TableHead className="font-semibold text-red-400 py-3 px-4">User 1 Rating</TableHead>
-                        <TableHead className="font-semibold text-red-400 py-3 px-4">User 2 Rating</TableHead>
-                        <TableHead className={`font-semibold ${isDarkTheme ? "text-gray-300" : "text-gray-700"} py-3 px-4`}>Compatibility</TableHead>
-                        <TableHead className={`font-semibold ${isDarkTheme ? "text-gray-300" : "text-gray-700"} py-3 px-4`}>Movies</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {genreData.map((item, i) => {
-                        const diff = Math.abs(item.user1 - item.user2);
-                        const compatibility = 100 - (diff * 20);
+            <CardContent className="p-2 sm:p-4 md:p-6">
+              {/* Mobile-first responsive design with horizontal scroll */}
+              <div className="w-full">
+                {/* Mobile Card Layout */}
+                <div className="block md:hidden space-y-3">
+                  {genreData.map((item, i) => {
+                    const diff = Math.abs(item.user1 - item.user2);
+                    const compatibility = 100 - (diff * 20);
+                    
+                    return (
+                      <div key={i} className={`p-4 rounded-lg border ${isDarkTheme ? "bg-gray-800/50 border-gray-700" : "bg-white border-gray-200"}`}>
+                        <div className="flex justify-between items-center mb-2">
+                          <h4 className={`font-semibold ${themeClasses}`}>{item.genre}</h4>
+                          <div 
+                            className={`text-xs font-medium px-2 py-1 rounded-full ${
+                              compatibility >= 80 
+                                ? 'bg-green-600 text-white' 
+                                : compatibility >= 60 
+                                ? 'bg-yellow-600 text-white'
+                                : 'bg-red-600 text-white'
+                            }`}
+                          >
+                            {compatibility}%
+                          </div>
+                        </div>
                         
-                        return (
-                          <TableRow key={i} className={`border-gray-700 hover:bg-gray-700/30 ${isDarkTheme ? "bg-gray-800/20" : "bg-white"}`}>
-                            <TableCell className={`font-medium ${themeClasses} py-3 px-4`}>{item.genre}</TableCell>
-                            <TableCell className="py-3 px-4">
-                              <div className="flex items-center gap-2">
-                                <div className="bg-red-600 h-3 rounded-sm flex-shrink-0" style={{ width: `${Math.max(20, item.user1 * 12)}px` }} />
-                                <span className={`text-sm ${themeClasses}`}>{item.user1.toFixed(1)}</span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="py-3 px-4">
-                              <div className="flex items-center gap-2">
-                                <div className="bg-red-500 h-3 rounded-sm flex-shrink-0" style={{ width: `${Math.max(20, item.user2 * 12)}px` }} />
-                                <span className={`text-sm ${themeClasses}`}>{item.user2.toFixed(1)}</span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="py-3 px-4">
-                              <div 
-                                className={`text-xs font-medium px-2 py-1 rounded-full inline-block ${
-                                  compatibility >= 80 
-                                    ? 'bg-green-600 text-white' 
-                                    : compatibility >= 60 
-                                    ? 'bg-yellow-600 text-white'
-                                    : 'bg-red-600 text-white'
-                                }`}
-                              >
-                                {compatibility}%
-                              </div>
-                            </TableCell>
-                            <TableCell className={`py-3 px-4 ${themeClasses}`}>{item.count}</TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className={`text-sm ${isDarkTheme ? "text-gray-300" : "text-gray-700"}`}>User 1:</span>
+                            <div className="flex items-center gap-2">
+                              <div className="bg-red-600 h-2 rounded-sm" style={{ width: `${Math.max(20, item.user1 * 12)}px` }} />
+                              <span className={`text-sm ${themeClasses}`}>{item.user1.toFixed(1)}</span>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between">
+                            <span className={`text-sm ${isDarkTheme ? "text-gray-300" : "text-gray-700"}`}>User 2:</span>
+                            <div className="flex items-center gap-2">
+                              <div className="bg-red-500 h-2 rounded-sm" style={{ width: `${Math.max(20, item.user2 * 12)}px` }} />
+                              <span className={`text-sm ${themeClasses}`}>{item.user2.toFixed(1)}</span>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between">
+                            <span className={`text-sm ${isDarkTheme ? "text-gray-300" : "text-gray-700"}`}>Movies:</span>
+                            <span className={`text-sm ${themeClasses}`}>{item.count}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Desktop Table Layout */}
+                <div className="hidden md:block w-full border rounded-lg overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <Table className="w-full">
+                      <TableHeader className="sticky top-0 bg-gray-800/90 backdrop-blur-sm">
+                        <TableRow className="border-gray-600 hover:bg-transparent">
+                          <TableHead className={`font-semibold ${isDarkTheme ? "text-gray-300" : "text-gray-700"} py-3 px-4`}>Genre</TableHead>
+                          <TableHead className="font-semibold text-red-400 py-3 px-4">User 1 Rating</TableHead>
+                          <TableHead className="font-semibold text-red-400 py-3 px-4">User 2 Rating</TableHead>
+                          <TableHead className={`font-semibold ${isDarkTheme ? "text-gray-300" : "text-gray-700"} py-3 px-4`}>Compatibility</TableHead>
+                          <TableHead className={`font-semibold ${isDarkTheme ? "text-gray-300" : "text-gray-700"} py-3 px-4`}>Movies</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {genreData.map((item, i) => {
+                          const diff = Math.abs(item.user1 - item.user2);
+                          const compatibility = 100 - (diff * 20);
+                          
+                          return (
+                            <TableRow key={i} className={`border-gray-700 hover:bg-gray-700/30 ${isDarkTheme ? "bg-gray-800/20" : "bg-white"}`}>
+                              <TableCell className={`font-medium ${themeClasses} py-3 px-4`}>{item.genre}</TableCell>
+                              <TableCell className="py-3 px-4">
+                                <div className="flex items-center gap-2">
+                                  <div className="bg-red-600 h-3 rounded-sm flex-shrink-0" style={{ width: `${Math.max(20, item.user1 * 12)}px` }} />
+                                  <span className={`text-sm ${themeClasses}`}>{item.user1.toFixed(1)}</span>
+                                </div>
+                              </TableCell>
+                              <TableCell className="py-3 px-4">
+                                <div className="flex items-center gap-2">
+                                  <div className="bg-red-500 h-3 rounded-sm flex-shrink-0" style={{ width: `${Math.max(20, item.user2 * 12)}px` }} />
+                                  <span className={`text-sm ${themeClasses}`}>{item.user2.toFixed(1)}</span>
+                                </div>
+                              </TableCell>
+                              <TableCell className="py-3 px-4">
+                                <div 
+                                  className={`text-xs font-medium px-2 py-1 rounded-full inline-block ${
+                                    compatibility >= 80 
+                                      ? 'bg-green-600 text-white' 
+                                      : compatibility >= 60 
+                                      ? 'bg-yellow-600 text-white'
+                                      : 'bg-red-600 text-white'
+                                  }`}
+                                >
+                                  {compatibility}%
+                                </div>
+                              </TableCell>
+                              <TableCell className={`py-3 px-4 ${themeClasses}`}>{item.count}</TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
               </div>
               

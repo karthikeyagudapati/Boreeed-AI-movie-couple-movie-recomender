@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Play, RefreshCw, Brain, Zap, BarChart } from "lucide-react";
 import { User, Movie, GroupRecommenderProps } from '@/types/groupRecommender';
 import { getThemeColors } from '@/utils/platformTheme';
-import { generateMovieRecommendations, getMoviesByGenre, analyzeViewingHistory, searchSimilarMovies } from '@/components/RecommendationEngine';
+import { generateMovieRecommendations, getMoviesByGenre, analyzeViewingHistory } from '@/components/RecommendationEngine';
 import GroupSetup from '@/components/GroupSetup';
 import GenreSelection from '@/components/GenreSelection';
 import LanguageSelector from '@/components/LanguageSelector';
@@ -14,6 +14,7 @@ import PlatformModeSelector from '@/components/PlatformModeSelector';
 import MovieCard from '@/components/MovieCard';
 import MovieCarousel from '@/components/MovieCarousel';
 import RecommendationVisualizations from '@/components/RecommendationVisualizations';
+import AdvancedMovieSearch from '@/components/AdvancedMovieSearch';
 
 const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, onBack }) => {
   const [users, setUsers] = useState<User[]>([
@@ -22,15 +23,13 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(['en']); // Default to English
   const [recommendations, setRecommendations] = useState<Movie[]>([]);
+  const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
   const [watchedMovies, setWatchedMovies] = useState<Set<number>>(new Set());
   const [isLoading, setIsLoading] = useState(false);
   const [showAlgorithm, setShowAlgorithm] = useState(false);
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [manualTitleInput, setManualTitleInput] = useState<{[key: string]: string}>({});
   const [crossPlatformMode, setCrossPlatformMode] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<Movie[]>([]);
-  const [showSearchResults, setShowSearchResults] = useState(false);
 
   const theme = getThemeColors(platform);
   const hasViewingHistory = users.some(user => user.viewingHistory);
@@ -107,6 +106,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
     setWatchedMovies(newWatchedMovies);
 
     setRecommendations(prev => prev.filter(movie => movie.id !== movieId));
+    setSimilarMovies(prev => prev.filter(movie => movie.id !== movieId));
     
     // Get a new movie to replace the watched one
     setTimeout(() => {
@@ -156,17 +156,8 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
     }, 1500);
   };
 
-  const searchSimilarMovies = (query: string, platform: string, crossPlatformMode: boolean): Movie[] => {
-    // Implement your search logic here
-    return [];
-  };
-
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      const results = searchSimilarMovies(searchQuery, platform, crossPlatformMode);
-      setSearchResults(results);
-      setShowSearchResults(true);
-    }
+  const handleSimilarMoviesFound = (movies: Movie[]) => {
+    setSimilarMovies(movies);
   };
 
   const moviesByGenre = selectedGenres.length === 0 ? getMoviesByGenre(platform, watchedMovies, crossPlatformMode) : null;
@@ -285,63 +276,42 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
             </Card>
           </div>
         </div>
-      )}
+      </div>
 
       <div className="max-w-6xl mx-auto p-4 sm:p-6">
-        {/* Movie Search Section - Mobile optimized */}
-        <Card className="mb-6 bg-gray-800/70 border-gray-600 shadow-2xl backdrop-blur-md">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Brain className={`h-5 sm:h-6 w-5 sm:w-6 ${theme.text}`} />
-              <h2 className="text-lg sm:text-xl font-bold text-white">Find Similar Movies</h2>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Input
-                placeholder="Enter a movie title to find similar recommendations..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                className="bg-gray-700/50 border-gray-600 text-gray-200 placeholder-gray-400 text-sm sm:text-base"
-              />
-              <Button
-                onClick={handleSearch}
-                disabled={!searchQuery.trim()}
-                className={`${theme.primary} hover:${theme.secondary} text-white flex-shrink-0`}
-              >
-                Search
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Advanced Movie Search */}
+        <AdvancedMovieSearch
+          platform={platform}
+          crossPlatformMode={crossPlatformMode}
+          selectedLanguages={selectedLanguages}
+          onSimilarMoviesFound={handleSimilarMoviesFound}
+        />
 
-        {/* Search Results - Mobile optimized */}
-        {showSearchResults && searchResults.length > 0 && (
+        {/* Similar Movies Section */}
+        {similarMovies.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg sm:text-xl font-bold flex items-center gap-3 text-white">
                 <Play className={`h-4 sm:h-5 w-4 sm:w-5 ${theme.text}`} />
-                <span className="hidden sm:inline">Similar to "{searchQuery}" ({searchResults.length} movies)</span>
-                <span className="sm:hidden">Similar ({searchResults.length})</span>
+                <span className="hidden sm:inline">Similar Movies ({similarMovies.length} recommendations)</span>
+                <span className="sm:hidden">Similar ({similarMovies.length})</span>
               </h2>
               <Button
-                onClick={() => setShowSearchResults(false)}
+                onClick={() => setSimilarMovies([])}
                 variant="outline"
                 size="sm"
                 className="text-gray-300 border-gray-500 hover:bg-gray-700 text-xs"
               >
-                Hide
+                Clear
               </Button>
             </div>
-            <div className="space-y-4">
-              {searchResults.map((movie) => (
-                <MovieCard
-                  key={movie.id}
-                  movie={movie}
-                  theme={theme}
-                  onMarkAsWatched={markAsWatched}
-                />
-              ))}
-            </div>
+            <MovieCarousel
+              title=""
+              movies={similarMovies}
+              theme={theme}
+              onMarkAsWatched={markAsWatched}
+              showCount={false}
+            />
           </div>
         )}
 
