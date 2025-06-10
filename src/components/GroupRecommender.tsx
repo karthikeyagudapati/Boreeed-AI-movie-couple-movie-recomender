@@ -424,5 +424,3 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
 };
 
 export default GroupRecommender;
-
-}
