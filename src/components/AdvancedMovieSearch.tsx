@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Search, Star, Play, Clock, Calendar } from "lucide-react";
 import { Movie } from '@/types/groupRecommender';
 import { megaMovieDatabase } from '@/utils/megaMovieDatabase';
+import { searchSimilarMovies } from '@/components/RecommendationEngine';
 
 interface AdvancedMovieSearchProps {
   platform: string;
@@ -95,9 +97,8 @@ const AdvancedMovieSearch: React.FC<AdvancedMovieSearchProps> = ({
       setIsSearching(true);
       
       setTimeout(() => {
-        // Pass selectedLanguages to the search function
         const results = searchSimilarMovies(searchQuery, platform, crossPlatformMode, selectedLanguages);
-        setSuggestions([]);
+        setSearchSuggestions([]);
         setSelectedMovie(null);
         onSimilarMoviesFound(results);
         setIsSearching(false);
@@ -107,7 +108,7 @@ const AdvancedMovieSearch: React.FC<AdvancedMovieSearchProps> = ({
 
   return (
     <>
-      <Card className="mb-6 bg-gray-800/70 border-gray-600 shadow-2xl backdrop-blur-md">
+      <Card className="mb-6 bg-gray-800/70 border-gray-600 shadow-2xl backdrop-blur-md relative z-10">
         <CardContent className="pt-6">
           <div className="flex items-center gap-3 mb-4">
             <Search className="h-5 sm:h-6 w-5 sm:w-6 text-blue-400" />
@@ -115,7 +116,7 @@ const AdvancedMovieSearch: React.FC<AdvancedMovieSearchProps> = ({
             <Badge className="bg-green-600 text-white text-xs">Real-time</Badge>
           </div>
           
-          <div className="relative">
+          <div className="relative z-50">
             <Input
               placeholder="Type movie name (e.g., 'HIT-3', 'Avengers')..."
               value={searchQuery}
@@ -124,9 +125,9 @@ const AdvancedMovieSearch: React.FC<AdvancedMovieSearchProps> = ({
             />
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             
-            {/* Search Suggestions Dropdown */}
+            {/* Search Suggestions Dropdown - High z-index to appear above other elements */}
             {showSuggestions && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 border border-gray-600 rounded-lg shadow-xl z-50 max-h-80 overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 border border-gray-600 rounded-lg shadow-xl z-[100] max-h-80 overflow-y-auto">
                 {searchSuggestions.map((movie) => (
                   <div
                     key={movie.id}

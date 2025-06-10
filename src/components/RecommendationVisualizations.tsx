@@ -1,160 +1,162 @@
 
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import { TrendingUp, Users, Film, Target } from 'lucide-react';
 
 const RecommendationVisualizations: React.FC = () => {
-  // Sample data for visualizations
+  // Mock data for visualization
   const genreData = [
-    { name: 'Action', count: 45, percentage: 25 },
-    { name: 'Drama', count: 38, percentage: 21 },
-    { name: 'Comedy', count: 32, percentage: 18 },
-    { name: 'Thriller', count: 28, percentage: 16 },
-    { name: 'Sci-Fi', count: 22, percentage: 12 },
-    { name: 'Romance', count: 15, percentage: 8 }
+    { name: 'Action', value: 35, color: '#ef4444' },
+    { name: 'Comedy', value: 25, color: '#f59e0b' },
+    { name: 'Drama', value: 20, color: '#3b82f6' },
+    { name: 'Sci-Fi', value: 12, color: '#10b981' },
+    { name: 'Horror', value: 8, color: '#8b5cf6' },
   ];
 
   const platformData = [
-    { name: 'Netflix', movies: 4200, shows: 2100, total: 6300 },
-    { name: 'Prime', movies: 3800, shows: 1900, total: 5700 },
-    { name: 'Disney+', movies: 2200, shows: 800, total: 3000 },
-    { name: 'HBO Max', movies: 1800, shows: 900, total: 2700 },
-    { name: 'Hulu', movies: 1500, shows: 1200, total: 2700 }
+    { platform: 'Netflix', movies: 120, match: 78 },
+    { platform: 'Prime Video', movies: 95, match: 72 },
+    { platform: 'Disney+', movies: 85, match: 68 },
+    { platform: 'HBO Max', movies: 75, match: 65 },
   ];
 
-  const userOverlapData = [
-    { name: 'User 1', value: 42, color: '#ef4444' },
-    { name: 'Common', value: 29, color: '#dc2626' },
-    { name: 'User 2', value: 38, color: '#b91c1c' }
+  const matchData = [
+    { range: '90-100%', count: 15 },
+    { range: '80-89%', count: 28 },
+    { range: '70-79%', count: 42 },
+    { range: '60-69%', count: 35 },
+    { range: '50-59%', count: 20 },
   ];
 
-  const COLORS = ['#ef4444', '#dc2626', '#b91c1c', '#991b1b', '#7f1d1d'];
+  const stats = [
+    { icon: Film, label: 'Total Movies', value: '1000+', color: 'text-blue-400' },
+    { icon: Users, label: 'User Profiles', value: '4', color: 'text-green-400' },
+    { icon: Target, label: 'Avg Match', value: '78%', color: 'text-yellow-400' },
+    { icon: TrendingUp, label: 'Success Rate', value: '92%', color: 'text-purple-400' },
+  ];
 
   return (
-    <div className="w-full space-y-4">
-      {/* Mobile-optimized grid layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Genre Analysis - Mobile Optimized */}
-        <div className="bg-gray-800/80 p-3 sm:p-4 rounded-lg border border-gray-700">
-          <h4 className="font-semibold mb-3 text-green-400 text-sm sm:text-base">Genre Analysis</h4>
-          <div className="h-48 sm:h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={genreData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="name" 
-                  stroke="#9ca3af" 
-                  fontSize={10}
-                  angle={-45}
-                  textAnchor="end"
-                  height={60}
-                />
-                <YAxis stroke="#9ca3af" fontSize={10} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#1f2937', 
-                    border: '1px solid #374151',
-                    fontSize: '12px'
-                  }} 
-                />
-                <Bar dataKey="count" fill="#10b981" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Platform Statistics - Mobile Optimized */}
-        <div className="bg-gray-800/80 p-3 sm:p-4 rounded-lg border border-gray-700">
-          <h4 className="font-semibold mb-3 text-blue-400 text-sm sm:text-base">Platform Content Count</h4>
-          <div className="h-48 sm:h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={platformData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="name" 
-                  stroke="#9ca3af" 
-                  fontSize={10}
-                  angle={-45}
-                  textAnchor="end"
-                  height={60}
-                />
-                <YAxis stroke="#9ca3af" fontSize={10} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#1f2937', 
-                    border: '1px solid #374151',
-                    fontSize: '12px'
-                  }} 
-                />
-                <Bar dataKey="total" fill="#3b82f6" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+    <div className="space-y-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat, index) => (
+          <Card key={index} className="bg-gray-800/50 border-gray-700">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <stat.icon className={`h-8 w-8 ${stat.color}`} />
+                <div>
+                  <p className="text-xs text-gray-400">{stat.label}</p>
+                  <p className="text-lg font-bold text-white">{stat.value}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      {/* User Preference Overlap - Full Width on Mobile */}
-      <div className="bg-gray-800/80 p-3 sm:p-4 rounded-lg border border-gray-700">
-        <h4 className="font-semibold mb-3 text-purple-400 text-sm sm:text-base">User Preference Overlap</h4>
-        <div className="flex flex-col lg:flex-row items-center gap-4">
-          <div className="w-full lg:w-1/2 h-48">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={userOverlapData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={60}
-                  dataKey="value"
-                  label={({ name, value }) => `${name}: ${value}%`}
-                  labelStyle={{ fontSize: '10px', fill: '#fff' }}
-                >
-                  {userOverlapData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#1f2937', 
-                    border: '1px solid #374151',
-                    fontSize: '12px'
-                  }} 
-                />
-              </PieChart>
-            </ResponsiveContainer>
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Genre Distribution */}
+        <Card className="bg-gray-800/50 border-gray-700">
+          <CardContent className="p-4">
+            <h3 className="text-lg font-semibold mb-4 text-white">Genre Distribution</h3>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={genreData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    dataKey="value"
+                    label={({ name, value }) => `${name} ${value}%`}
+                  >
+                    {genreData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Platform Analysis */}
+        <Card className="bg-gray-800/50 border-gray-700">
+          <CardContent className="p-4">
+            <h3 className="text-lg font-semibold mb-4 text-white">Platform Analysis</h3>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={platformData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="platform" tick={{ fill: '#9ca3af', fontSize: 12 }} />
+                  <YAxis tick={{ fill: '#9ca3af', fontSize: 12 }} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#1f2937', 
+                      border: '1px solid #374151',
+                      borderRadius: '8px',
+                      color: '#fff'
+                    }} 
+                  />
+                  <Bar dataKey="movies" fill="#3b82f6" />
+                  <Bar dataKey="match" fill="#10b981" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Match Score Distribution - Mobile Responsive Table */}
+      <Card className="bg-gray-800/50 border-gray-700">
+        <CardContent className="p-4">
+          <h3 className="text-lg font-semibold mb-4 text-white">Match Score Distribution</h3>
+          
+          {/* Mobile: Stack cards */}
+          <div className="lg:hidden space-y-3">
+            {matchData.map((item, index) => (
+              <div key={index} className="bg-gray-700/50 p-3 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300 font-medium">{item.range}</span>
+                  <Badge className="bg-blue-600 text-white">{item.count} movies</Badge>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="w-full lg:w-1/2 space-y-2">
-            <div className="text-xs sm:text-sm text-gray-300">
-              <h5 className="font-semibold mb-2">Preference Overlap Analysis</h5>
-              <ul className="space-y-1">
-                <li>• Users share <span className="text-red-400 font-semibold">26.6%</span> of their movie preferences</li>
-                <li>• Common genres: <span className="text-blue-400">Drama, Action, Comedy</span></li>
-                <li>• Recommendation accuracy: <span className="text-green-400">94.2%</span></li>
-                <li>• Cross-platform compatibility: <span className="text-purple-400">89.1%</span></li>
-              </ul>
+          
+          {/* Desktop: Table */}
+          <div className="hidden lg:block">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-700">
+                    <th className="text-left py-3 px-4 text-gray-300 font-semibold">Match Range</th>
+                    <th className="text-left py-3 px-4 text-gray-300 font-semibold">Movie Count</th>
+                    <th className="text-left py-3 px-4 text-gray-300 font-semibold">Percentage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {matchData.map((item, index) => (
+                    <tr key={index} className="border-b border-gray-700/50 hover:bg-gray-700/30">
+                      <td className="py-3 px-4 text-white">{item.range}</td>
+                      <td className="py-3 px-4 text-gray-300">{item.count}</td>
+                      <td className="py-3 px-4">
+                        <Badge className="bg-green-600 text-white">
+                          {Math.round((item.count / 140) * 100)}%
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Algorithm Performance Metrics - Mobile Optimized */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-gray-800/80 p-3 rounded-lg border border-gray-700 text-center">
-          <div className="text-lg sm:text-xl font-bold text-green-400">94.2%</div>
-          <div className="text-xs text-gray-400">Match Accuracy</div>
-        </div>
-        <div className="bg-gray-800/80 p-3 rounded-lg border border-gray-700 text-center">
-          <div className="text-lg sm:text-xl font-bold text-blue-400">1.2s</div>
-          <div className="text-xs text-gray-400">Response Time</div>
-        </div>
-        <div className="bg-gray-800/80 p-3 rounded-lg border border-gray-700 text-center">
-          <div className="text-lg sm:text-xl font-bold text-purple-400">6,847</div>
-          <div className="text-xs text-gray-400">Movies Analyzed</div>
-        </div>
-        <div className="bg-gray-800/80 p-3 rounded-lg border border-gray-700 text-center">
-          <div className="text-lg sm:text-xl font-bold text-yellow-400">98.7%</div>
-          <div className="text-xs text-gray-400">User Satisfaction</div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
