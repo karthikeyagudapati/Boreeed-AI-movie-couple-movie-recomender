@@ -11,7 +11,8 @@ export const generateMovieRecommendations = (
   getMore: boolean = false,
   count: number = 50,
   crossPlatform: boolean = false,
-  manualTitles: string[] = []
+  manualTitles: string[] = [],
+  selectedLanguages: string[] = []
 ): Movie[] => {
   // Use MEGA database for maximum variety (1000+ movies)
   let filteredMovies = [...megaMovieDatabase, ...expandedMovieDatabase, ...movieDatabase];
@@ -19,7 +20,25 @@ export const generateMovieRecommendations = (
   console.log('Cross-platform mode:', crossPlatform);
   console.log('Selected platform:', platform);
   console.log('Manual titles provided:', manualTitles);
+  console.log('Selected languages:', selectedLanguages);
   console.log('Total movies in database:', filteredMovies.length);
+
+  // ENHANCED LANGUAGE FILTERING - Only show movies in selected languages
+  if (selectedLanguages && selectedLanguages.length > 0) {
+    console.log('Filtering by languages:', selectedLanguages);
+    filteredMovies = filteredMovies.filter(movie => {
+      // Add language property to movies (simulation for demonstration)
+      const movieLanguage = getMovieLanguage(movie.title, movie.genres);
+      const matchesLanguage = selectedLanguages.includes(movieLanguage);
+      
+      if (matchesLanguage) {
+        console.log(`Including ${movie.title} - Language: ${movieLanguage}`);
+      }
+      
+      return matchesLanguage;
+    });
+    console.log('Movies after language filtering:', filteredMovies.length);
+  }
 
   // Analyze manual titles to boost similar movies
   if (manualTitles && manualTitles.length > 0) {
@@ -52,10 +71,6 @@ export const generateMovieRecommendations = (
       };
     });
   }
-
-  console.log('Cross-platform mode:', crossPlatform);
-  console.log('Selected platform:', platform);
-  console.log('Total movies in database:', filteredMovies.length);
 
   // IMPROVED Platform filtering logic - More flexible when user has viewing history
   if (!crossPlatform) {
@@ -178,16 +193,70 @@ export const generateMovieRecommendations = (
   }));
 };
 
+// Helper function to determine movie language based on title and genres
+const getMovieLanguage = (title: string, genres: string[]): string => {
+  // Telugu movie patterns
+  const teluguPatterns = [
+    'RRR', 'Baahubali', 'Pushpa', 'Arjun Reddy', 'Geetha Govindam', 'Majili', 'Dear Comrade',
+    'Saaho', 'Maharshi', 'Ala Vaikunthapurramuloo', 'Aravinda Sametha', 'Rangasthalam',
+    'Bharat Ane Nenu', 'Mahanati', 'HIT', 'Agent', 'Bheeshma', 'Karthikeya 2'
+  ];
+  
+  // Tamil movie patterns
+  const tamilPatterns = [
+    'Vikram', 'Beast', 'Master', 'Bigil', 'Mersal', 'Sarkar', 'Kabali', 'Kaala',
+    'Enthiran', 'Sivaji', 'Anniyan', 'Ghilli', 'Thuppakki', 'Kaththi'
+  ];
+  
+  // Hindi movie patterns
+  const hindiPatterns = [
+    'Dangal', 'Baahubali', 'PK', '3 Idiots', 'Sultan', 'Tiger', 'War', 'Pathaan',
+    'KGF', 'Pushpa', 'Sooryavanshi', 'Simmba', 'Padmaavat', 'Gully Boy'
+  ];
+  
+  const titleLower = title.toLowerCase();
+  
+  // Check for Telugu patterns
+  if (teluguPatterns.some(pattern => titleLower.includes(pattern.toLowerCase()))) {
+    return 'te';
+  }
+  
+  // Check for Tamil patterns
+  if (tamilPatterns.some(pattern => titleLower.includes(pattern.toLowerCase()))) {
+    return 'ta';
+  }
+  
+  // Check for Hindi patterns
+  if (hindiPatterns.some(pattern => titleLower.includes(pattern.toLowerCase()))) {
+    return 'hi';
+  }
+  
+  // Default to English for other movies
+  return 'en';
+};
+
 export const getMoviesByGenre = (
   platform: string,
   watchedMovies: Set<number>,
-  crossPlatform: boolean = false
+  crossPlatform: boolean = false,
+  selectedLanguages: string[] = []
 ): { [key: string]: Movie[] } => {
   const moviesByGenre: { [key: string]: Movie[] } = {};
   let filteredMovies = [...megaMovieDatabase, ...expandedMovieDatabase, ...movieDatabase];
 
   console.log('Genre filtering - Cross-platform:', crossPlatform, 'Platform:', platform);
   console.log('Total movies for genre filtering:', filteredMovies.length);
+  console.log('Selected languages for genre filtering:', selectedLanguages);
+
+  // ENHANCED LANGUAGE FILTERING for genre-based recommendations
+  if (selectedLanguages && selectedLanguages.length > 0) {
+    console.log('Filtering genre movies by languages:', selectedLanguages);
+    filteredMovies = filteredMovies.filter(movie => {
+      const movieLanguage = getMovieLanguage(movie.title, movie.genres);
+      return selectedLanguages.includes(movieLanguage);
+    });
+    console.log('Genre movies after language filtering:', filteredMovies.length);
+  }
 
   // IMPROVED platform filtering for genre-based recommendations
   if (!crossPlatform) {
@@ -207,7 +276,6 @@ export const getMoviesByGenre = (
       
       console.log(`Genre movies available on ${platformName}:`, platformMovies.length);
       
-      // If we don't have enough movies, be more flexible
       if (platformMovies.length < 30) {
         console.log('Not enough genre movies, using flexible matching...');
         const flexibleMovies = filteredMovies.filter(movie => {
@@ -226,7 +294,6 @@ export const getMoviesByGenre = (
         
         platformMovies = [...platformMovies, ...flexibleMovies];
         
-        // If still not enough, add top-rated content
         if (platformMovies.length < 25) {
           const topContent = filteredMovies
             .filter(movie => movie.matchPercentage >= 80)
@@ -287,8 +354,21 @@ export const analyzeViewingHistory = (file: File): Promise<string[]> => {
 };
 
 // Updated search function to use mega database
-export const searchSimilarMovies = (searchTitle: string, platform: string, crossPlatform: boolean = false): Movie[] => {
+export const searchSimilarMovies = (
+  searchTitle: string, 
+  platform: string, 
+  crossPlatform: boolean = false, 
+  selectedLanguages: string[] = []
+): Movie[] => {
   let allMovies = [...megaMovieDatabase, ...expandedMovieDatabase, ...movieDatabase];
+  
+  // Filter by language first if specified
+  if (selectedLanguages && selectedLanguages.length > 0) {
+    allMovies = allMovies.filter(movie => {
+      const movieLanguage = getMovieLanguage(movie.title, movie.genres);
+      return selectedLanguages.includes(movieLanguage);
+    });
+  }
   
   // Filter by platform if not cross-platform
   if (!crossPlatform) {

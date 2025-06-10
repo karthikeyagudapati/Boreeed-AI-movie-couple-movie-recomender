@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,17 +15,18 @@ interface AdvancedMovieSearchProps {
   onSimilarMoviesFound: (movies: Movie[]) => void;
 }
 
-const AdvancedMovieSearch: React.FC<AdvancedMovieSearchProps> = ({ 
-  platform, 
-  crossPlatformMode, 
+const AdvancedMovieSearch: React.FC<AdvancedMovieSearchProps> = ({
+  platform,
+  crossPlatformMode,
   selectedLanguages,
-  onSimilarMoviesFound 
+  onSimilarMoviesFound
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchSuggestions, setSearchSuggestions] = useState<Movie[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Real-time search suggestions as user types
   useEffect(() => {
@@ -88,6 +88,21 @@ const AdvancedMovieSearch: React.FC<AdvancedMovieSearchProps> = ({
       .slice(0, 20);
     
     onSimilarMoviesFound(topSimilar);
+  };
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      setIsSearching(true);
+      
+      setTimeout(() => {
+        // Pass selectedLanguages to the search function
+        const results = searchSimilarMovies(searchQuery, platform, crossPlatformMode, selectedLanguages);
+        setSuggestions([]);
+        setSelectedMovie(null);
+        onSimilarMoviesFound(results);
+        setIsSearching(false);
+      }, 800);
+    }
   };
 
   return (

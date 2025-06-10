@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -136,16 +135,13 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
         getMore,
         count,
         crossPlatformMode,
-        allManualTitles // Pass manual titles to recommendation engine
+        allManualTitles,
+        selectedLanguages // Pass selected languages to recommendation engine
       );
 
-      // Filter by selected languages if any are selected
+      // Language filtering is now handled in the recommendation engine
       let filteredMovies = newMovies;
-      if (selectedLanguages.length > 0) {
-        // For now, we'll simulate language filtering
-        // In a real implementation, this would filter based on movie language metadata
-        console.log('Filtering by languages:', selectedLanguages);
-      }
+      console.log('Recommendations after language filtering:', filteredMovies.length);
 
       if (getMore) {
         setRecommendations(prev => [...prev, ...filteredMovies]);
@@ -161,7 +157,7 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
     setSimilarMovies(movies);
   };
 
-  const moviesByGenre = selectedGenres.length === 0 ? getMoviesByGenre(platform, watchedMovies, crossPlatformMode) : null;
+  const moviesByGenre = selectedGenres.length === 0 ? getMoviesByGenre(platform, watchedMovies, crossPlatformMode, selectedLanguages) : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white overflow-x-hidden">
@@ -428,3 +424,5 @@ const GroupRecommender: React.FC<GroupRecommenderProps> = ({ platform, country, 
 };
 
 export default GroupRecommender;
+
+}
